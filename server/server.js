@@ -6,6 +6,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const auth = require("./routes/auth.route");
 const protected = require("./routes/protected.route");
+const initializePassport = require("./config/passport.config");
+const passport = require("passport");
+const session = require("express-session");
 
 const app = express();
 dotenv.config();
@@ -14,6 +17,8 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to database"))
   .catch((err) => console.log(err));
+
+initializePassport(passport);
 
 app.use(express.json());
 app.use(bodyParser.urlencoded());
@@ -24,6 +29,19 @@ app.use(
   })
 );
 
+// Passport
+app.use(
+  session({
+    secret: process.env.PASSPORT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
 app.use("/users", userRoute);
 app.use("/auth", auth);
 app.use("/protected", protected);
