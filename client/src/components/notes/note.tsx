@@ -13,7 +13,11 @@ export default function NoteCard({ note }: { note: Note }) {
             {timeLapsed(note.created_at)}
           </p>
         </div>
-        <p>{note.content}</p>
+        <p>
+          {note.content.length > 100
+            ? note.content.substring(0, 100).concat("...")
+            : note.content}
+        </p>
       </div>
       <div className="flex gap-1">
         <Button size={"icon"} variant={"ghost"}>
