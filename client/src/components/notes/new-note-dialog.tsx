@@ -25,10 +25,13 @@ export default function NewNoteDialog({
   const [newNote, setNewNote] = useState<Note>({
     title: "",
     content: "",
+    created_at: "",
   });
+
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewNote({ ...newNote, title: event.target.value });
   };
+
   const handleContentChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -36,7 +39,21 @@ export default function NewNoteDialog({
   };
 
   const handleAdd = () => {
-    console.log(newNote);
+    if (newNote.title === "" || newNote.content === "") return;
+
+    const timestamp = new Date().toISOString();
+
+    const updatedNewNote = { ...newNote, created_at: timestamp };
+
+    setNotes((prevNotes) => [updatedNewNote, ...prevNotes]);
+
+    setNewNote({
+      title: "",
+      content: "",
+      created_at: "",
+    });
+
+    setOpen(false);
   };
 
   return (

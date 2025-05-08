@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import NewNoteDialog from "@/components/notes/new-note-dialog";
 import type { Note } from "@/lib/types";
+import Notes from "@/components/notes/notes";
 
 export default function Home() {
   const [openNewNoteDialog, setOpenNewNoteDialog] = useState(false);
@@ -24,29 +25,38 @@ export default function Home() {
   return (
     <>
       <PagesLayout currentPage="Quick Notes">
-        <div className="flex flex-col gap-4 items-center">
-          <h1 className="text-2xl font-semibold">Hello, Ericson</h1>
-          <div className="flex flex-col gap-1 items-center w-full">
-            <Input
-              onClick={() => setOpenNewNoteDialog(true)}
-              placeholder="Note"
-              className="md:w-[300px] w-full"
-            />
-            <div className="flex gap-1">
-              <Button variant={"ghost"} size={"sm"}>
-                <ImageIcon className="w-6 h-6" />
-                Image
-              </Button>
-              <Button variant={"ghost"} size={"sm"}>
-                <ListIcon className="w-6 h-6" />
-                List
-              </Button>
+        <div className="flex flex-col gap-12">
+          <div className="flex flex-col gap-4 items-center">
+            <h1 className="text-2xl font-semibold">Hello, Ericson</h1>
+            <div className="flex flex-col gap-1 items-center w-full">
+              <Input
+                role="button"
+                readOnly
+                onClick={() => setOpenNewNoteDialog(true)}
+                placeholder="Note"
+                className="md:w-[300px] w-full"
+              />
+              <div className="flex gap-1">
+                <Button variant={"ghost"} size={"sm"}>
+                  <ImageIcon className="w-6 h-6" />
+                  Image
+                </Button>
+                <Button variant={"ghost"} size={"sm"}>
+                  <ListIcon className="w-6 h-6" />
+                  List
+                </Button>
+              </div>
             </div>
           </div>
+          {/* Notes section */}
+          <section>{notes.length > 0 && <Notes notes={notes} />}</section>
         </div>
-        {/* Notes section */}
       </PagesLayout>
-      <NewNoteDialog open={openNewNoteDialog} setOpen={setOpenNewNoteDialog} />
+      <NewNoteDialog
+        open={openNewNoteDialog}
+        setOpen={setOpenNewNoteDialog}
+        setNotes={setNotes}
+      />
     </>
   );
 }
