@@ -1,7 +1,21 @@
-import type { Note } from "@/lib/types";
+import type { ListItem, Note } from "@/lib/types";
 import { Button } from "../ui/button";
 import { Pencil, Trash } from "lucide-react";
 import { timeLapsed } from "@/lib/utils";
+import { Checkbox } from "../ui/checkbox";
+
+function DisplayListItems({ items }: { items: ListItem[] }) {
+  return (
+    <div>
+      {items.map((item) => (
+        <div className="flex gap-2 items-center" key={item.id}>
+          <Checkbox />
+          <p>{item.item}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function NoteCard({ note }: { note: Note }) {
   return (
@@ -13,11 +27,15 @@ export default function NoteCard({ note }: { note: Note }) {
             {timeLapsed(note.created_at)}
           </p>
         </div>
-        <p>
-          {note.content.length > 100
-            ? note.content.substring(0, 100).concat("...")
-            : note.content}
-        </p>
+        {note.type === "text" ? (
+          <p>
+            {note.content && note.content.length > 100
+              ? note.content.substring(0, 200).concat("...")
+              : note.content}
+          </p>
+        ) : (
+          <DisplayListItems items={note.list!} />
+        )}
       </div>
       <div className="flex gap-1">
         <Button size={"icon"} variant={"ghost"}>
