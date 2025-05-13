@@ -15,7 +15,7 @@ export default function TooltipWrapper({
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>{children}</TooltipTrigger>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent>{tooltipText}</TooltipContent>
       </Tooltip>
     </TooltipProvider>

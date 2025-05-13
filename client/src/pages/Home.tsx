@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ImageIcon, ListIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import NewNoteDialog from "@/components/notes/new-note-dialog";
+import CreateNote from "@/components/notes/create-note";
 import type { Note } from "@/lib/types";
 import Notes from "@/components/notes/notes";
 
@@ -52,7 +52,7 @@ export default function Home() {
           <section>{notes.length > 0 && <Notes notes={notes} />}</section>
         </div>
       </PagesLayout>
-      <NewNoteDialog
+      <CreateNote
         open={openNewNoteDialog}
         setOpen={setOpenNewNoteDialog}
         setNotes={setNotes}
