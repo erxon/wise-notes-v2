@@ -38,7 +38,7 @@ const data = {
     {
       title: "Ask AI",
       icon: Sparkle,
-      url: "/ask",
+      url: "/ask-ai",
     },
   ],
   notebooks: [

@@ -4,6 +4,7 @@ export interface ListItem {
 }
 
 export interface Note {
+  id: number;
   title: string;
   content?: string;
   list?: ListItem[];

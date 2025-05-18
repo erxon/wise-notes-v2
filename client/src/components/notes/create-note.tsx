@@ -228,6 +228,7 @@ export default function CreateNote({
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   const [note, setNote] = useState<Note>({
+    id: 0,
     title: "",
     content: "",
     list: [],
@@ -236,8 +237,12 @@ export default function CreateNote({
   });
 
   const handleAdd = () => {
-    setNotes((prevNotes) => [note, ...prevNotes]);
+    setNotes((prevNotes) => [
+      { ...note, id: prevNotes.length + 1 },
+      ...prevNotes,
+    ]);
     setNote({
+      id: 0,
       title: "",
       content: "",
       list: [],

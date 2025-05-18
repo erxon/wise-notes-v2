@@ -11,7 +11,7 @@ export default function NoteCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4">
+    <div className="flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300">
       <div className="flex flex-col gap-2 p-2">
         <div>
           <h1 className="text-lg font-medium">{note.title}</h1>

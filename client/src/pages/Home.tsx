@@ -8,6 +8,8 @@ import { useState } from "react";
 import CreateNote from "@/components/notes/create-note";
 import type { Note } from "@/lib/types";
 import Notes from "@/components/notes/notes";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 export default function Home() {
   const [openNewNoteDialog, setOpenNewNoteDialog] = useState(false);
@@ -22,9 +24,11 @@ export default function Home() {
     }
   }, [user, navigate]);
 
+  console.log(notes);
+
   return (
     <>
-      <PagesLayout currentPage="Quick Notes">
+      <PagesLayout page="Quick Notes">
         <div className="flex flex-col gap-12">
           <div className="flex flex-col gap-4 items-center">
             <h1 className="text-2xl font-semibold">Hello, Ericson</h1>
@@ -49,7 +53,11 @@ export default function Home() {
             </div>
           </div>
           {/* Notes section */}
-          <section>{notes.length > 0 && <Notes notes={notes} />}</section>
+          <section>
+            <DndProvider backend={HTML5Backend}>
+              {notes.length > 0 && <Notes notes={notes} setNotes={setNotes} />}
+            </DndProvider>
+          </section>
         </div>
       </PagesLayout>
       <CreateNote

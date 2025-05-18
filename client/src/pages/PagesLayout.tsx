@@ -5,16 +5,16 @@ import { SiteHeader } from "@/components/site-header";
 
 export default function PagesLayout({
   children,
-  currentPage,
+  page,
 }: {
   children: React.ReactNode;
-  currentPage: string;
+  page: string;
 }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <SiteHeader currentPage={currentPage} />
+      <SidebarInset className="h-screen">
+        <SiteHeader currentPage={page} />
         <main className="p-4">{children}</main>
       </SidebarInset>
     </SidebarProvider>
