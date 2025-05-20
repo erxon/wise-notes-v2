@@ -20,7 +20,7 @@ export function SiteHeader({
   currentPage,
   backLinks,
 }: {
-  currentPage: string;
+  currentPage?: string;
   backLinks?: BackLink[];
 }) {
   return (
@@ -49,7 +49,7 @@ export function SiteHeader({
               ))}
             <BreadcrumbItem>
               <BreadcrumbPage className="font-medium">
-                {currentPage}
+                {currentPage ? currentPage : ""}
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>

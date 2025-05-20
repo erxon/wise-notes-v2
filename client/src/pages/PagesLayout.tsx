@@ -15,7 +15,7 @@ export default function PagesLayout({
   backLinks,
 }: {
   children: React.ReactNode;
-  page: string;
+  page?: string;
   backLinks?: BackLink[];
 }) {
   return (
