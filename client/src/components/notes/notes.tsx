@@ -1,7 +1,7 @@
 import type { Note } from "@/lib/types";
 import NoteText from "./note-text";
 import NoteList from "./note-list";
-import { useDrag, useDrop } from "react-dnd";
+import { ConnectableElement, useDrag, useDrop } from "react-dnd";
 import { motion } from "motion/react";
 import clsx from "clsx";
 
@@ -10,6 +10,7 @@ interface DragItem {
   index: number;
   type: string;
 }
+
 function DisplayNote({
   note,
   id,
@@ -35,7 +36,7 @@ function DisplayNote({
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
-  });
+  }) as [{ isOver: boolean }, (node: HTMLElement | null) => ConnectableElement];
 
   const [{ isDragging }, dragRef] = useDrag(() => ({
     type: "note",
@@ -82,10 +83,7 @@ export default function Notes({
   };
 
   return (
-    <div
-      className="columns-2 md:columns-3 lg:columns-4 gap-2"
-      style={{ columnCount: 4 }}
-    >
+    <div className="columns-2 md:columns-3 lg:columns-4 gap-2">
       {notes.map((note, index) => (
         <DisplayNote
           key={note.id}

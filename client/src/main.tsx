@@ -9,6 +9,8 @@ import Signup from "./pages/auth/Signup";
 import { ThemeProvider } from "./components/theme-provider";
 import Chat from "./pages/AskAI/Chat/Chat";
 import Profile from "./pages/Profile/Profile";
+import Email from "./pages/Profile/Email";
+import Password from "./pages/Profile/Password";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -20,7 +22,9 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/ask-ai/:id" element={<Chat />} />
           <Route path="/auth/signin" element={<Signin />} />
           <Route path="/auth/signup" element={<Signup />} />
-          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/email" element={<Email />} />
+          <Route path="/profile/password" element={<Password />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

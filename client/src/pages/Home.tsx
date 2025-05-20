@@ -9,7 +9,8 @@ import CreateNote from "@/components/notes/create-note";
 import type { Note } from "@/lib/types";
 import Notes from "@/components/notes/notes";
 import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { MultiBackend } from "react-dnd-multi-backend";
+import { HTML5toTouch } from "rdndmb-html5-to-touch";
 
 export default function Home() {
   const [openNewNoteDialog, setOpenNewNoteDialog] = useState(false);
@@ -54,7 +55,7 @@ export default function Home() {
           </div>
           {/* Notes section */}
           <section>
-            <DndProvider backend={HTML5Backend}>
+            <DndProvider options={HTML5toTouch} backend={MultiBackend}>
               {notes.length > 0 && <Notes notes={notes} setNotes={setNotes} />}
             </DndProvider>
           </section>
