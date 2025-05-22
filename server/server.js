@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const auth = require("./routes/auth.route");
 const protected = require("./routes/protected.route");
+const notes = require("./routes/notes.route");
 const initializePassport = require("./config/passport.config");
 const passport = require("passport");
 const session = require("express-session");
@@ -53,6 +54,7 @@ app.use(passport.session());
 app.use(`${version}/users`, userRoute);
 app.use(`${version}/auth`, auth);
 app.use(`${version}/protected`, protected);
+app.use(`${version}/notes`, notes);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
