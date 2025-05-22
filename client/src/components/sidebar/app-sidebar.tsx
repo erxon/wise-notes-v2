@@ -44,7 +44,7 @@ const data = {
   notebooks: [
     {
       title: "Work",
-      url: "",
+      url: "/notebook/1",
       icon: Notebook,
     },
     {

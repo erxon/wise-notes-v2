@@ -57,7 +57,7 @@ function DisplayNote({
         animate={{ scale: isOver ? 0.95 : 1 }}
         className={clsx(
           isOver && "opacity-20",
-          `bg-white ${isDragging ? "opacity-75" : "opacity-100"}`
+          `${isDragging ? "opacity-75" : "opacity-100"}`
         )}
       >
         {note.type === "text" && <NoteText note={note} />}
