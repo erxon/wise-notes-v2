@@ -13,6 +13,7 @@ const helmet = require("helmet");
 
 const app = express();
 dotenv.config();
+const version = "/api/v1";
 
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -44,9 +45,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use("/users", userRoute);
-app.use("/auth", auth);
-app.use("/protected", protected);
+
+app.use(`${version}/users`, userRoute);
+app.use(`${version}/auth`, auth);
+app.use(`${version}/protected`, protected);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
