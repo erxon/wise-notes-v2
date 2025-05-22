@@ -9,6 +9,7 @@ const protected = require("./routes/protected.route");
 const initializePassport = require("./config/passport.config");
 const passport = require("passport");
 const session = require("express-session");
+const helmet = require("helmet");
 
 const app = express();
 dotenv.config();
@@ -20,6 +21,7 @@ mongoose
 
 initializePassport(passport);
 
+app.use(helmet());
 app.use(express.json());
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
