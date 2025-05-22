@@ -38,8 +38,9 @@ app.use(
     secret: process.env.PASSPORT_SECRET,
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     cookie: {
-      maxAge: 1000 * 60 * 60, // ⏰ 30 minutes (in milliseconds)
+      maxAge: 1000 * 60 * 60,
     },
   })
 );
