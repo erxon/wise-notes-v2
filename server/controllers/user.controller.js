@@ -23,7 +23,7 @@ const createUser = async (req, res) => {
 };
 
 const getUser = (req, res) => {
-  res.status(200).json({ name: "ericson", password: "ericson" });
+  res.status(200).json(req.user);
 };
 
 module.exports = { getUser, createUser };

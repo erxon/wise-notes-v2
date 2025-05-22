@@ -5,7 +5,7 @@ const passport = require("passport");
 router.post(
   "/signin",
   passport.authenticate("local", {
-    successRedirect: "/protected",
+    successRedirect: "/api/v1/protected",
     failureRedirect: "/",
   })
 );

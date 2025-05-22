@@ -23,7 +23,13 @@ function initialize(passport) {
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await User.findById(id);
-      done(null, user);
+
+      done(null, {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      });
     } catch (err) {
       done(err);
     }
