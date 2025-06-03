@@ -6,6 +6,9 @@ const {
   getNotes,
   getNoteById,
   updateNote,
+  deleteManyNotes,
+  permanentDelete,
+  restoreNote,
 } = require("../controllers/notes.controller");
 const {
   addItemToListNote,
@@ -19,7 +22,12 @@ const router = Router();
 router
   .route("/")
   .post(isAuthenticated, createNote)
-  .get(isAuthenticated, getNotes);
+  .get(isAuthenticated, getNotes)
+  .delete(isAuthenticated, deleteManyNotes);
+
+router.route("/delete").delete(isAuthenticated, permanentDelete);
+
+router.route("/restore/:id").put(isAuthenticated, restoreNote);
 
 router
   .route("/:id")

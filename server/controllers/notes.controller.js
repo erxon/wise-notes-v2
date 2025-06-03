@@ -1,7 +1,6 @@
 const Note = require("../models/notes.model");
 const logger = require("../utilities/logger.util");
-const splitter = require("../utilities/textSplitter.util");
-const embeddings = require("../utilities/embeddings.util");
+const chunkGenerator = require("../utilities/chunkGenerator.util");
 const Chunk = require("../models/chunks.model");
 
 const getNoteById = async (req, res, next) => {
@@ -22,8 +21,6 @@ const createNote = async (req, res) => {
   try {
     const { title, content, type, items } = req.body;
 
-    const chunks = await splitter.splitText(content);
-
     const newNote = new Note({
       userId: req.user.id,
       title,
@@ -34,20 +31,7 @@ const createNote = async (req, res) => {
 
     const note = await newNote.save();
 
-    await Promise.all(
-      chunks.map(async (chunk) => {
-        const embeddingVector = await embeddings.embedQuery(chunk);
-
-        const newChunk = new Chunk({
-          noteId: newNote._id,
-          userId: req.user.id,
-          text: chunk,
-          embedding: embeddingVector,
-        });
-
-        await newChunk.save();
-      })
-    );
+    await chunkGenerator(content, note._id, req.user.id);
 
     res.status(200).json({ data: note, message: "Note created successfully" });
   } catch (error) {
@@ -74,10 +58,16 @@ const getNotes = async (req, res) => {
 const deleteOneNote = async (req, res) => {
   try {
     //check if the note exist
-    const note = await Note.findByIdAndDelete(req.params.id);
+    const note = await Note.findByIdAndUpdate(req.params.id, {
+      deletedAt: Date.now(),
+    });
+
+    const chunks = await Chunk.deleteMany({ noteId: req.params.id });
 
     logger.info("Note deleted successfully");
-    res.status(200).json({ data: note, message: "Note deleted successfully" });
+    res
+      .status(200)
+      .json({ data: { note, chunks }, message: "Note deleted successfully" });
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
@@ -87,9 +77,46 @@ const deleteOneNote = async (req, res) => {
 const deleteManyNotes = async (req, res) => {
   try {
     const toDelete = req.body.toDelete;
-    await Note.deleteMany({ _id: { $in: toDelete } });
+
+    await Note.updateMany(
+      { _id: { $in: toDelete } },
+      { deletedAt: Date.now() }
+    );
+
+    await Chunk.deleteMany({ noteId: { $in: toDelete } });
+
     logger.info("Notes deleted successfully");
     res.status(200).json({ message: "Notes deleted successfully" });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
+const permanentDelete = async (req, res) => {
+  try {
+    const toDelete = req.body.toDelete;
+
+    await Note.deleteMany({ _id: { $in: toDelete } });
+
+    logger.info("Notes deleted successfully");
+
+    res.status(200).json({ message: "Notes deleted permanently" });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
+const restoreNote = async (req, res) => {
+  try {
+    const note = await Note.findByIdAndUpdate(req.params.id, {
+      deletedAt: null,
+    });
+
+    await chunkGenerator(note.content, note._id, req.user.id);
+
+    res.status(200).json({ data: note, message: "Note restored successfully" });
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
@@ -105,7 +132,10 @@ const updateNote = async (req, res) => {
         new: true,
       }
     );
-    logger.info("Note updated successfully");
+
+    await Chunk.deleteMany({ noteId: req.params.id });
+    await chunkGenerator(req.body.content, note._id, req.user.id);
+
     res.status(200).json({ data: note, message: "Note updated successfully" });
   } catch (error) {
     logger.error(error);
@@ -120,4 +150,6 @@ module.exports = {
   deleteOneNote,
   deleteManyNotes,
   updateNote,
+  permanentDelete,
+  restoreNote,
 };
