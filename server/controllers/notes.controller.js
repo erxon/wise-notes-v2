@@ -1,7 +1,6 @@
 const Note = require("../models/notes.model");
 const logger = require("../utilities/logger.util");
 const splitter = require("../utilities/textSplitter.util");
-const getVectorStore = require("../utilities/vectorStore.util");
 const embeddings = require("../utilities/embeddings.util");
 const Chunk = require("../models/chunks.model");
 
@@ -18,6 +17,7 @@ const getNoteById = async (req, res, next) => {
     res.status(400).json({ message: "Something went wrong" });
   }
 };
+
 const createNote = async (req, res) => {
   try {
     const { title, content, type, items } = req.body;
@@ -36,7 +36,6 @@ const createNote = async (req, res) => {
 
     await Promise.all(
       chunks.map(async (chunk) => {
-        console.log(chunk);
         const embeddingVector = await embeddings.embedQuery(chunk);
 
         const newChunk = new Chunk({
@@ -55,6 +54,7 @@ const createNote = async (req, res) => {
     res.status(400).json({ message: "Something went wrong" });
   }
 };
+
 const getNotes = async (req, res) => {
   try {
     let page = req.query.page || 1;
