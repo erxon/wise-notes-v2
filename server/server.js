@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 const auth = require("./routes/auth.route");
 const protected = require("./routes/protected.route");
 const notes = require("./routes/notes.route");
+const test = require("./routes/test.route");
+const rag = require("./routes/rag.route");
 const initializePassport = require("./config/passport.config");
 const passport = require("passport");
 const session = require("express-session");
@@ -55,6 +57,8 @@ app.use(`${version}/users`, userRoute);
 app.use(`${version}/auth`, auth);
 app.use(`${version}/protected`, protected);
 app.use(`${version}/notes`, notes);
+app.use(`${version}/rag`, rag);
+app.use(`${version}/test`, test);
 
 app.get("/", (req, res) => {
   res.send("Hello World");

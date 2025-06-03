@@ -1,5 +1,9 @@
 const Note = require("../models/notes.model");
 const logger = require("../utilities/logger.util");
+const splitter = require("../utilities/textSplitter.util");
+const getVectorStore = require("../utilities/vectorStore.util");
+const embeddings = require("../utilities/embeddings.util");
+const Chunk = require("../models/chunks.model");
 
 const getNoteById = async (req, res, next) => {
   try {
@@ -18,6 +22,8 @@ const createNote = async (req, res) => {
   try {
     const { title, content, type, items } = req.body;
 
+    const chunks = await splitter.splitText(content);
+
     const newNote = new Note({
       userId: req.user.id,
       title,
@@ -27,16 +33,37 @@ const createNote = async (req, res) => {
     });
 
     const note = await newNote.save();
-    logger.info("Note created successfully");
+
+    await Promise.all(
+      chunks.map(async (chunk) => {
+        console.log(chunk);
+        const embeddingVector = await embeddings.embedQuery(chunk);
+
+        const newChunk = new Chunk({
+          noteId: newNote._id,
+          userId: req.user.id,
+          text: chunk,
+          embedding: embeddingVector,
+        });
+
+        await newChunk.save();
+      })
+    );
+
     res.status(200).json({ data: note, message: "Note created successfully" });
   } catch (error) {
-    logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
   }
 };
 const getNotes = async (req, res) => {
   try {
-    const notes = await Note.find({ userId: req.user.id });
+    let page = req.query.page || 1;
+    page = parseInt(page);
+    const numberOfDocuments = page * 10;
+    console.log(numberOfDocuments);
+    const notes = await Note.find({ userId: req.user.id }).limit(
+      numberOfDocuments
+    );
     res.status(200).json({ data: notes });
   } catch (error) {
     logger.error(error);

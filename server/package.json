@@ -11,6 +11,13 @@
     "start": "nodemon server.js"
   },
   "dependencies": {
+    "@huggingface/inference": "^2.8.1",
+    "@langchain/community": "^0.3.45",
+    "@langchain/core": "^0.3.57",
+    "@langchain/groq": "^0.2.2",
+    "@langchain/mongodb": "^0.1.0",
+    "@langchain/textsplitters": "^0.1.0",
+    "axios": "^1.9.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
@@ -19,6 +26,7 @@
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.16.0",
     "mongoose": "^8.14.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
