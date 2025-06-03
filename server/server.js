@@ -17,6 +17,7 @@ const helmet = require("helmet");
 const app = express();
 dotenv.config();
 const version = "/api/v1";
+const port = process.env.PORT || 8080;
 
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -64,6 +65,6 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.listen(8080, () => {
+app.listen(port, () => {
   console.log("Server is running on port 8080");
 });
