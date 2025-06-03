@@ -61,10 +61,6 @@ app.use(`${version}/notes`, notes);
 app.use(`${version}/rag`, rag);
 app.use(`${version}/test`, test);
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
-
 app.listen(port, () => {
-  console.log("Server is running on port 8080");
+  console.log("Server is running on port", port);
 });
