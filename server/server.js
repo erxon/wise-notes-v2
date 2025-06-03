@@ -13,6 +13,7 @@ const initializePassport = require("./config/passport.config");
 const passport = require("passport");
 const session = require("express-session");
 const helmet = require("helmet");
+const MongoStore = require("connect-mongo");
 
 const app = express();
 dotenv.config();
@@ -43,8 +44,13 @@ app.use(
     resave: false,
     saveUninitialized: false,
     rolling: true,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: "sessions",
+      ttl: 1000 * 60 * 60,
+    }),
     cookie: {
-      maxAge: 1000 * 60 * 60,
+      secure: true,
     },
   })
 );
