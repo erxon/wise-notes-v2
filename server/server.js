@@ -62,7 +62,6 @@ app.use(passport.session());
 
 app.use(`${version}/users`, userRoute);
 app.use(`${version}/auth`, auth);
-app.use(`${version}/protected`, protected);
 app.use(`${version}/notes`, notes);
 app.use(`${version}/rag`, rag);
 app.use(`${version}/test`, test);
