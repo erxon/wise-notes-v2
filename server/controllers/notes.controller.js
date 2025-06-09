@@ -61,7 +61,10 @@ const deleteOneNote = async (req, res) => {
       deletedAt: Date.now(),
     });
 
-    const chunks = await Chunk.deleteMany({ noteId: req.params.id });
+    const chunks = await Chunk.updateMany(
+      { noteId: req.params.id },
+      { deletedAt: Date.now() }
+    );
 
     logger.info("Note deleted successfully");
     res
@@ -82,7 +85,10 @@ const deleteManyNotes = async (req, res) => {
       { deletedAt: Date.now() }
     );
 
-    await Chunk.deleteMany({ noteId: { $in: toDelete } });
+    await Chunk.updateMany(
+      { noteId: { $in: toDelete } },
+      { deletedAt: Date.now() }
+    );
 
     logger.info("Notes deleted successfully");
     res.status(200).json({ message: "Notes deleted successfully" });
@@ -97,6 +103,8 @@ const permanentDelete = async (req, res) => {
     const toDelete = req.body.toDelete;
 
     await Note.deleteMany({ _id: { $in: toDelete } });
+
+    await Chunk.deleteMany({ noteId: { $in: toDelete } });
 
     logger.info("Notes deleted successfully");
 
@@ -113,7 +121,7 @@ const restoreNote = async (req, res) => {
       deletedAt: null,
     });
 
-    await chunkGenerator(note.content, note._id, req.user.id);
+    await Chunk.updateMany({ noteId: req.params.id }, { deletedAt: null });
 
     res.status(200).json({ data: note, message: "Note restored successfully" });
   } catch (error) {
