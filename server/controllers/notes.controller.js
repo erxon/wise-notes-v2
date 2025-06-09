@@ -2,6 +2,7 @@ const Note = require("../models/notes.model");
 const logger = require("../utilities/logger.util");
 const chunkGenerator = require("../utilities/chunkGenerator.util");
 const Chunk = require("../models/chunks.model");
+const Notebook = require("../models/notebooks.model");
 
 const getNoteById = async (req, res, next) => {
   try {
@@ -11,6 +12,37 @@ const getNoteById = async (req, res, next) => {
     }
     req.note = note;
     next();
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
+const moveNotesToNotebook = async (req, res) => {
+  try {
+    const { notes, notebookId } = req.body;
+
+    logger.info("Moving notes to notebook...");
+    const updateNote = await Note.updateMany(
+      { _id: { $in: notes } },
+      {
+        notebookId: req.body.notebookId,
+      }
+    );
+    logger.info("Notes moved successfully");
+
+    logger.info("Moving chunks to notebook...");
+    const updateChunks = await Chunk.updateMany(
+      { noteId: { $in: notes } },
+      {
+        notebookId: req.body.notebookId,
+      }
+    );
+    logger.info("Chunks moved successfully");
+
+    res
+      .status(200)
+      .json({ data: updateNote, message: `${notes.length} note/s moved` });
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
@@ -159,4 +191,5 @@ module.exports = {
   updateNote,
   permanentDelete,
   restoreNote,
+  moveNotesToNotebook,
 };

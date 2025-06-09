@@ -94,7 +94,6 @@ const deleteNotebook = async (req, res) => {
       { notebookId: notebook._id },
       { deletedAt: new Date.now() }
     );
-
     console.log(updateNotes);
     logger.info("Notes updated");
 
@@ -135,7 +134,6 @@ const restoreNotebook = async (req, res) => {
     res.status(200).json({ data: notebook, message: "Notebook restored" });
   } catch (error) {
     logger.error(error);
-
     res.status(400).json({ message: "Something went wrong." });
   }
 };
