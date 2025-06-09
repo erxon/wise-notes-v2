@@ -5,6 +5,11 @@ const noteSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  notebookId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Notebook",
+    default: null,
+  },
   title: String,
   content: String,
   type: {
