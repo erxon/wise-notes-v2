@@ -48,7 +48,6 @@ app.use(
       ttl: 1000 * 60 * 60,
     }),
     cookie: {
-      secure: true,
       maxAge: 1000 * 60 * 60,
     },
   })
