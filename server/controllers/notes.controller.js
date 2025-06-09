@@ -44,7 +44,6 @@ const getNotes = async (req, res) => {
     let page = req.query.page || 1;
     page = parseInt(page);
     const numberOfDocuments = page * 10;
-    console.log(numberOfDocuments);
     const notes = await Note.find({ userId: req.user.id }).limit(
       numberOfDocuments
     );
