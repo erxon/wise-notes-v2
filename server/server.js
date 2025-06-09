@@ -25,8 +25,6 @@ mongoose
   .then(() => console.log("Connected to database"))
   .catch((err) => console.log(err));
 
-initializePassport(passport);
-
 app.use(helmet());
 app.use(express.json());
 app.use(bodyParser.urlencoded());
@@ -51,9 +49,12 @@ app.use(
     }),
     cookie: {
       secure: true,
+      maxAge: 1000 * 60 * 60,
     },
   })
 );
+
+initializePassport(passport);
 
 app.use(passport.initialize());
 app.use(passport.session());
