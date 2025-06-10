@@ -9,10 +9,12 @@ const protected = require("./routes/protected.route");
 const notes = require("./routes/notes.route");
 const test = require("./routes/test.route");
 const rag = require("./routes/rag.route");
+const notebook = require("./routes/notebook.route");
 const initializePassport = require("./config/passport.config");
 const passport = require("passport");
 const session = require("express-session");
 const helmet = require("helmet");
+const MongoStore = require("connect-mongo");
 
 const app = express();
 dotenv.config();
@@ -23,8 +25,6 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to database"))
   .catch((err) => console.log(err));
-
-initializePassport(passport);
 
 app.use(helmet());
 app.use(express.json());
@@ -43,18 +43,25 @@ app.use(
     resave: false,
     saveUninitialized: false,
     rolling: true,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: "sessions",
+      ttl: 1000 * 60 * 60,
+    }),
     cookie: {
       maxAge: 1000 * 60 * 60,
     },
   })
 );
 
+initializePassport(passport);
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Routes
-
+// My Routes
 app.use(`${version}/users`, userRoute);
+app.use(`${version}/notebooks`, notebook);
 app.use(`${version}/auth`, auth);
 app.use(`${version}/protected`, protected);
 app.use(`${version}/notes`, notes);

@@ -2,6 +2,7 @@ const Note = require("../models/notes.model");
 const logger = require("../utilities/logger.util");
 const chunkGenerator = require("../utilities/chunkGenerator.util");
 const Chunk = require("../models/chunks.model");
+const Notebook = require("../models/notebooks.model");
 
 const getNoteById = async (req, res, next) => {
   try {
@@ -11,6 +12,69 @@ const getNoteById = async (req, res, next) => {
     }
     req.note = note;
     next();
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
+const moveNotesToNotebook = async (req, res) => {
+  try {
+    const { notes, notebookId } = req.body;
+
+    logger.info("Moving notes to notebook...");
+    const updateNote = await Note.updateMany(
+      { _id: { $in: notes } },
+      {
+        notebookId: notebookId,
+      }
+    );
+    logger.info("Notes moved successfully");
+
+    logger.info("Moving chunks to notebook...");
+    await Chunk.updateMany(
+      { noteId: { $in: notes } },
+      {
+        notebookId: req.body.notebookId,
+      }
+    );
+    logger.info("Chunks moved successfully");
+
+    res
+      .status(200)
+      .json({ data: updateNote, message: `${notes.length} note/s moved` });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
+const removeFromNotebook = async (req, res) => {
+  try {
+    const { notes } = req.body;
+
+    logger.info("Removing notes...");
+    const updateMany = await Note.updateMany(
+      {
+        _id: { $in: notes },
+      },
+      {
+        notebookId: null,
+      }
+    );
+    logger.info("Notes removed successfully");
+    console.log(updateMany);
+
+    const updateChunks = await Chunk.updateMany(
+      { noteId: { $in: notes } },
+      { notebookId: null }
+    );
+    logger.info("Chunks removed successfully");
+    console.log(updateChunks);
+
+    res
+      .status(200)
+      .json({ data: updateMany, message: `${notes.length} note/s removed` });
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
@@ -44,7 +108,6 @@ const getNotes = async (req, res) => {
     let page = req.query.page || 1;
     page = parseInt(page);
     const numberOfDocuments = page * 10;
-    console.log(numberOfDocuments);
     const notes = await Note.find({ userId: req.user.id }).limit(
       numberOfDocuments
     );
@@ -62,7 +125,10 @@ const deleteOneNote = async (req, res) => {
       deletedAt: Date.now(),
     });
 
-    const chunks = await Chunk.deleteMany({ noteId: req.params.id });
+    const chunks = await Chunk.updateMany(
+      { noteId: req.params.id },
+      { deletedAt: Date.now() }
+    );
 
     logger.info("Note deleted successfully");
     res
@@ -83,7 +149,10 @@ const deleteManyNotes = async (req, res) => {
       { deletedAt: Date.now() }
     );
 
-    await Chunk.deleteMany({ noteId: { $in: toDelete } });
+    await Chunk.updateMany(
+      { noteId: { $in: toDelete } },
+      { deletedAt: Date.now() }
+    );
 
     logger.info("Notes deleted successfully");
     res.status(200).json({ message: "Notes deleted successfully" });
@@ -98,6 +167,8 @@ const permanentDelete = async (req, res) => {
     const toDelete = req.body.toDelete;
 
     await Note.deleteMany({ _id: { $in: toDelete } });
+
+    await Chunk.deleteMany({ noteId: { $in: toDelete } });
 
     logger.info("Notes deleted successfully");
 
@@ -114,7 +185,7 @@ const restoreNote = async (req, res) => {
       deletedAt: null,
     });
 
-    await chunkGenerator(note.content, note._id, req.user.id);
+    await Chunk.updateMany({ noteId: req.params.id }, { deletedAt: null });
 
     res.status(200).json({ data: note, message: "Note restored successfully" });
   } catch (error) {
@@ -152,4 +223,6 @@ module.exports = {
   updateNote,
   permanentDelete,
   restoreNote,
+  moveNotesToNotebook,
+  removeFromNotebook,
 };

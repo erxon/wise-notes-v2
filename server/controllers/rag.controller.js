@@ -14,7 +14,7 @@ const query = async (req, res) => {
   try {
     const vectorStore = await getVectorStore();
     const retriever = vectorStore.asRetriever({
-      filter: { userId: userId },
+      filter: { userId: userId, deletedAt: null },
     });
 
     const prompt = ChatPromptTemplate.fromMessages([
