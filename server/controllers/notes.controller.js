@@ -26,13 +26,13 @@ const moveNotesToNotebook = async (req, res) => {
     const updateNote = await Note.updateMany(
       { _id: { $in: notes } },
       {
-        notebookId: req.body.notebookId,
+        notebookId: notebookId,
       }
     );
     logger.info("Notes moved successfully");
 
     logger.info("Moving chunks to notebook...");
-    const updateChunks = await Chunk.updateMany(
+    await Chunk.updateMany(
       { noteId: { $in: notes } },
       {
         notebookId: req.body.notebookId,
@@ -43,6 +43,38 @@ const moveNotesToNotebook = async (req, res) => {
     res
       .status(200)
       .json({ data: updateNote, message: `${notes.length} note/s moved` });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
+const removeFromNotebook = async (req, res) => {
+  try {
+    const { notes } = req.body;
+
+    logger.info("Removing notes...");
+    const updateMany = await Note.updateMany(
+      {
+        _id: { $in: notes },
+      },
+      {
+        notebookId: null,
+      }
+    );
+    logger.info("Notes removed successfully");
+    console.log(updateMany);
+
+    const updateChunks = await Chunk.updateMany(
+      { noteId: { $in: notes } },
+      { notebookId: null }
+    );
+    logger.info("Chunks removed successfully");
+    console.log(updateChunks);
+
+    res
+      .status(200)
+      .json({ data: updateMany, message: `${notes.length} note/s removed` });
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
@@ -192,4 +224,5 @@ module.exports = {
   permanentDelete,
   restoreNote,
   moveNotesToNotebook,
+  removeFromNotebook,
 };

@@ -9,6 +9,8 @@ const {
   deleteManyNotes,
   permanentDelete,
   restoreNote,
+  moveNotesToNotebook,
+  removeFromNotebook,
 } = require("../controllers/notes.controller");
 const {
   addItemToListNote,
@@ -28,6 +30,10 @@ router
 router.route("/delete").delete(isAuthenticated, permanentDelete);
 
 router.route("/restore/:id").put(isAuthenticated, restoreNote);
+
+router.put("/organize", isAuthenticated, moveNotesToNotebook);
+
+router.put("/remove-from-notebook", isAuthenticated, removeFromNotebook);
 
 router
   .route("/:id")

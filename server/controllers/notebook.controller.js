@@ -30,7 +30,7 @@ const getNotebooks = async (req, res) => {
   }
 };
 
-const getNotebookById = async (req, res) => {
+const getNotebookById = async (req, res, next) => {
   try {
     const notebook = await Notebook.findById(req.params.id);
 
@@ -83,7 +83,7 @@ const deleteNotebook = async (req, res) => {
 
     //Updating the notebook
     logger.info("Updating the notebook...");
-    notebook.deletedAt = new Date.now();
+    notebook.deletedAt = Date.now();
 
     await notebook.save();
     logger.info("Notebook saved");
@@ -92,7 +92,7 @@ const deleteNotebook = async (req, res) => {
     logger.info("Updating the notes belonging to the notebook");
     const updateNotes = await Note.updateMany(
       { notebookId: notebook._id },
-      { deletedAt: new Date.now() }
+      { deletedAt: Date.now() }
     );
     console.log(updateNotes);
     logger.info("Notes updated");
@@ -101,11 +101,13 @@ const deleteNotebook = async (req, res) => {
     logger.info("Updating note chunks...");
     await Chunk.updateMany(
       { notebookId: notebook._id },
-      { deletedAt: new Date.now() }
+      { deletedAt: Date.now() }
     );
     logger.info("Note chunks updated");
 
-    res.status(200).json({ data: notebook, message: "Notebook deleted" });
+    res
+      .status(200)
+      .json({ data: notebook, message: "Notebook moved to trash" });
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
