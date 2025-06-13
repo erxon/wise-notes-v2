@@ -1,21 +1,20 @@
 import { Input } from "@/components/ui/input";
 import AuthLayout from "./AuthLayout";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import LogoLarge from "@/components/logo-large";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import authSchema from "@/lib/schema/auth-schema";
-
-const user = {
-  email: "ericsoncastasus@info.cc",
-  password: "ericson123",
-};
+import axios from "axios";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function Signin() {
   const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
     defaultValues: {
@@ -25,12 +24,31 @@ export default function Signin() {
   });
 
   const onSubmit = async (values: z.infer<typeof authSchema>) => {
-    if (values.email !== user.email || values.password !== user.password) {
-      return alert("Invalid credentials");
+    const rootUrl = `${import.meta.env.VITE_API_URL}/${
+      import.meta.env.VITE_API_VERSION
+    }`;
+    try {
+      const result = await axios.post(
+        `${rootUrl}/auth/signin/`,
+        {
+          username: values.email,
+          password: values.password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (result.status === 200) {
+        navigate("/");
+      }
+    } catch (error) {
+      form.reset();
+      toast.error("An error occured while signing you in.", {
+        description:
+          "Please check your credentials. Or sign-up if you don't have an account yet",
+      });
     }
-    // This will be removed when server auth is added
-    localStorage.setItem("user", JSON.stringify(user));
-    navigate("/");
   };
 
   return (
@@ -78,7 +96,7 @@ export default function Signin() {
               </Link>
               <p className="text-sm">
                 Do not have an account yet?{" "}
-                <Link to={"/auth/signup"} className="text-blue-500">
+                <Link to={"/sign-up"} className="text-blue-500">
                   Sign-up
                 </Link>
               </p>

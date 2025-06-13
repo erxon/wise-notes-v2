@@ -63,7 +63,7 @@ export default function Signup() {
             </Link>
             <p className="text-sm">
               Already have an account?{" "}
-              <Link to={"/auth/signin"} className="text-blue-500">
+              <Link to={"/sign-in"} className="text-blue-500">
                 Sign-in
               </Link>
             </p>

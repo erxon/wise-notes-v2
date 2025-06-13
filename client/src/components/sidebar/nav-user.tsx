@@ -24,6 +24,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import axios from "axios";
+import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 export function NavUser({
   user,
@@ -34,7 +37,23 @@ export function NavUser({
     avatar: string;
   };
 }) {
+  const navigate = useNavigate();
   const { isMobile } = useSidebar();
+
+  const handleLogout = async () => {
+    toast.info("Logging out...");
+
+    await axios.get(
+      `${import.meta.env.VITE_API_URL}/${
+        import.meta.env.VITE_API_VERSION
+      }/auth/signout`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    navigate("/sign-in");
+  };
 
   return (
     <SidebarMenu>
@@ -94,7 +113,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOutIcon />
               Log out
             </DropdownMenuItem>

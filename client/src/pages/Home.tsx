@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
 import PagesLayout from "./PagesLayout";
 import { useState } from "react";
 import CreateNote from "@/components/notes/create-note";
@@ -13,15 +11,6 @@ import NoteField from "@/components/notes/note-field";
 export default function Home() {
   const [openNewNoteDialog, setOpenNewNoteDialog] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
-
-  const navigate = useNavigate();
-  const user = localStorage.getItem("user");
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/auth/signin");
-    }
-  }, [user, navigate]);
 
   return (
     <>
