@@ -32,10 +32,12 @@ app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: process.env.ORIGIN,
+    origin: `http://localhost:5173`,
+    credentials: true,
   })
 );
 
+initializePassport(passport);
 // Passport
 app.use(
   session({
@@ -49,12 +51,12 @@ app.use(
       ttl: 1000 * 60 * 60,
     }),
     cookie: {
+      secure: false,
       maxAge: 1000 * 60 * 60,
+      sameSite: "lax",
     },
   })
 );
-
-initializePassport(passport);
 
 app.use(passport.initialize());
 app.use(passport.session());
