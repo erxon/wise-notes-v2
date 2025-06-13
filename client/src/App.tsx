@@ -7,8 +7,18 @@ import Password from "./pages/Profile/Password";
 import AskAI from "./pages/AskAI/AskAI";
 import Chat from "./pages/AskAI/Chat/Chat";
 import Notebook from "./pages/Notebooks/Notebook";
+import Signin from "./pages/auth/Signin";
+import Signup from "./pages/auth/Signup";
 
 const router = createBrowserRouter([
+  {
+    path: "/sign-in",
+    Component: Signin,
+  },
+  {
+    path: "/sign-up",
+    Component: Signup,
+  },
   {
     path: "/",
     Component: Home,
