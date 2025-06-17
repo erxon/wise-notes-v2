@@ -105,12 +105,12 @@ const createNote = async (req, res) => {
 
 const getNotes = async (req, res) => {
   try {
-    let page = req.query.page || 1;
-    page = parseInt(page);
-    const numberOfDocuments = page * 10;
-    const notes = await Note.find({ userId: req.user.id }).limit(
-      numberOfDocuments
-    );
+    const notes = await Note.find({
+      userId: req.user.id,
+      deletedAt: null,
+    }).sort({
+      createdAt: "desc",
+    });
     res.status(200).json({ data: notes });
   } catch (error) {
     logger.error(error);

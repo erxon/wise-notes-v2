@@ -1,13 +1,22 @@
 import { Note } from "@/lib/types";
 import NoteCard from "./note";
+import { useState } from "react";
 
-export default function NoteText({ note }: { note: Note }) {
+export default function NoteText({
+  note,
+  setNotes,
+}: {
+  note: Note;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
+}) {
+  const [noteState, setNoteState] = useState<Note>(note);
+
   return (
-    <NoteCard note={note}>
+    <NoteCard note={noteState} setNoteState={setNoteState} setNotes={setNotes}>
       <>
-        {note.content && (
+        {noteState.content && (
           <p className="text-sm break-words whitespace-pre-wrap">
-            {note.content}
+            {noteState.content}
           </p>
         )}
       </>

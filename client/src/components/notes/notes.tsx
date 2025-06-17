@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import clsx from "clsx";
 
 interface DragItem {
-  id: number;
+  id: string;
   index: number;
   type: string;
 }
@@ -16,11 +16,13 @@ function DisplayNote({
   id,
   index,
   moveNote,
+  setNotes,
 }: {
   note: Note;
-  id: number;
+  id: string;
   index: number;
-  moveNote: (id: number, toIndex: number) => void;
+  moveNote: (id: string, toIndex: number) => void;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   const [{ isOver }, dropRef] = useDrop<DragItem>({
     accept: "note",
@@ -60,7 +62,7 @@ function DisplayNote({
           `${isDragging ? "opacity-75" : "opacity-100"}`
         )}
       >
-        {note.type === "text" && <NoteText note={note} />}
+        {note.type === "text" && <NoteText setNotes={setNotes} note={note} />}
         {note.type === "list" && <NoteList note={note} />}{" "}
       </motion.div>
     </>
@@ -74,8 +76,8 @@ export default function Notes({
   notes: Note[];
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
-  const moveNote = (id: number, toIndex: number) => {
-    const index = notes.findIndex((note) => note.id === id);
+  const moveNote = (id: string, toIndex: number) => {
+    const index = notes.findIndex((note) => note._id === id);
     const updatedNotes = [...notes];
     const [movedNote] = updatedNotes.splice(index, 1);
     updatedNotes.splice(toIndex, 0, movedNote);
@@ -84,15 +86,20 @@ export default function Notes({
 
   return (
     <div className="columns-2 md:columns-3 lg:columns-4 gap-2">
-      {notes.map((note, index) => (
-        <DisplayNote
-          key={note.id}
-          index={index}
-          moveNote={moveNote}
-          id={note.id}
-          note={note}
-        />
-      ))}
+      {notes.map((note, index) => {
+        if (!note.deletedAt) {
+          return (
+            <DisplayNote
+              key={note._id}
+              index={index}
+              moveNote={moveNote}
+              id={note._id}
+              note={note}
+              setNotes={setNotes}
+            />
+          );
+        }
+      })}
     </div>
   );
 }

@@ -16,6 +16,8 @@ import { ImageIcon, ListChecks, Pencil, Plus, Text, Trash } from "lucide-react";
 import TooltipWrapper from "./tooltip";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
+import axios, { AxiosError } from "axios";
+import { toast } from "sonner";
 
 /* 
 TODO 
@@ -227,28 +229,64 @@ export default function CreateNote({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+
   const [note, setNote] = useState<Note>({
-    id: 0,
+    _id: "",
     title: "",
     content: "",
     list: [],
-    created_at: "",
+    createdAt: "",
     type: "text",
   });
 
-  const handleAdd = () => {
-    setNotes((prevNotes) => [
-      { ...note, id: prevNotes.length + 1 },
-      ...prevNotes,
-    ]);
+  const handleAdd = async () => {
+    setIsAdding(true);
+
+    toast.info("Adding new note");
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/${
+          import.meta.env.VITE_API_VERSION
+        }/notes`,
+        {
+          title: note.title,
+          content: note.content,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        const date = new Date().toLocaleString();
+        toast.success(response.data.message, {
+          description: `New note added ${date}`,
+        });
+
+        setNotes((prevNotes) => [
+          { ...note, id: response.data.data.id },
+          ...prevNotes,
+        ]);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+      }
+    }
+
+    setIsAdding(false);
+
     setNote({
-      id: 0,
+      _id: "",
       title: "",
       content: "",
       list: [],
-      created_at: "",
+      createdAt: "",
       type: note.type,
     });
+
     setOpen(false);
   };
 
@@ -282,7 +320,9 @@ export default function CreateNote({
           <DialogClose asChild>
             <Button variant={"secondary"}>Cancel</Button>
           </DialogClose>
-          <Button onClick={handleAdd}>Add</Button>
+          <Button onClick={handleAdd} disabled={isAdding}>
+            Add
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

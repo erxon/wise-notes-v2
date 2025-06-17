@@ -12,12 +12,14 @@ export interface ListItem {
 }
 
 export interface Note {
-  id: number;
-  notebook?: number;
+  _id: string;
+  notebook?: string;
   title: string;
   content?: string;
   list?: ListItem[];
-  created_at: string;
+  createdAt: string;
+  updatedAt?: string;
+  deletedAt?: string;
   type: "text" | "list";
 }
 
