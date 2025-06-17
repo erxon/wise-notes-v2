@@ -42,7 +42,7 @@ export default function PagesLayout({
         <SiteHeader backLinks={backLinks} currentPage={page} />
         <main className="p-4">
           {children}
-          <Toaster />
+          <Toaster richColors />
         </main>
       </SidebarInset>
     </SidebarProvider>

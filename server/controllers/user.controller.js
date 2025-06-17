@@ -32,9 +32,14 @@ const updateUserBasicInfo = async (req, res) => {
     const user = req.user;
     const { firstName, lastName } = req.body;
 
-    const result = await User.findByIdAndUpdate(user._id, {
+    if (firstName === "" || lastName === "") {
+      res.status(400).json({ message: "First name and Last name is required" });
+    }
+
+    const result = await User.findByIdAndUpdate(user.id, {
       firstName: firstName,
       lastName: lastName,
+      updatedAt: Date.now(),
     });
 
     res
@@ -49,22 +54,24 @@ const updateUserBasicInfo = async (req, res) => {
 const updatePassword = async (req, res) => {
   try {
     const user = req.user;
-    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
 
-    if (newPassword !== confirmPassword) {
-      res.status(400).json({ message: "Passwords don't match" });
-    }
-
-    const isMatch = await bcrypt.compare(currentPassword, user.hash);
+    const getUser = await User.findById(user.id);
+    const isMatch = await bcrypt.compare(currentPassword, getUser.hash);
 
     if (!isMatch) {
-      res.status(400).json({ message: "Current password is incorrect" });
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "Passwords don't match" });
     }
 
     const hash = await bcrypt.hash(newPassword, 10);
 
-    const result = await User.findByIdAndUpdate(user._id, {
+    const result = await User.findByIdAndUpdate(user.id, {
       hash: hash,
+      updatedAt: Date.now(),
     });
 
     res
@@ -80,31 +87,34 @@ const updateEmail = async (req, res) => {
   try {
     const user = req.user;
 
+    const getUser = await User.findById(user.id);
+
     const { newEmail, confirmNewEmail, password } = req.body;
 
-    const isMatch = await bcrypt.compare(password, user.hash);
+    const isMatch = await bcrypt.compare(password, getUser.hash);
 
     if (!isMatch) {
-      res.status(400).json({ message: "Invalid password" });
+      return res.status(400).json({ message: "Invalid password" });
     }
 
     if (newEmail !== confirmNewEmail) {
-      res.status(400).json({ message: "Emails didn't matched" });
+      return res.status(400).json({ message: "Emails didn't matched" });
     }
 
     const existingEmailAddress = await User.find({ email: newEmail });
 
     if (existingEmailAddress.length > 0) {
-      res.status(400).json({ message: "Email already exists" });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
-    const result = await User.findByIdAndUpdate(user._id, {
+    const result = await User.findByIdAndUpdate(user.id, {
       email: newEmail,
+      updatedAt: Date.now(),
     });
 
     res.status(200).json({
       data: result,
-      message: "New email registered, you will be signed out",
+      message: "Email was successfully updated",
     });
   } catch (error) {
     logger.error(error);
