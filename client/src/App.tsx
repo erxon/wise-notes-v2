@@ -9,6 +9,7 @@ import Chat from "./pages/AskAI/Chat/Chat";
 import Notebook from "./pages/Notebooks/Notebook";
 import Signin from "./pages/auth/Signin";
 import Signup from "./pages/auth/Signup";
+import Bin from "./pages/Bin/Bin";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     Component: Home,
+  },
+  {
+    path: "/bin",
+    Component: Bin,
   },
   {
     path: "/profile",

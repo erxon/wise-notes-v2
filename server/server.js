@@ -15,6 +15,7 @@ const passport = require("passport");
 const session = require("express-session");
 const helmet = require("helmet");
 const MongoStore = require("connect-mongo");
+const bin = require("./routes/bin.route");
 
 const app = express();
 dotenv.config();
@@ -67,6 +68,7 @@ app.use(`${version}/notebooks`, notebook);
 app.use(`${version}/auth`, auth);
 app.use(`${version}/protected`, protected);
 app.use(`${version}/notes`, notes);
+app.use(`${version}/bin`, bin);
 app.use(`${version}/rag`, rag);
 app.use(`${version}/test`, test);
 
