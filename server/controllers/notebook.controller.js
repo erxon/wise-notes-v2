@@ -20,7 +20,10 @@ const createNotebook = async (req, res) => {
 
 const getNotebooks = async (req, res) => {
   try {
-    const notebooks = await Notebook.find({ userId: req.user.id });
+    const notebooks = await Notebook.find({
+      userId: req.user.id,
+      deletedAt: null,
+    });
 
     logger.info("Successfully fetched notebooks");
     res.status(200).json({ data: notebooks });
@@ -163,6 +166,22 @@ const permanentDeleteNotebook = async (req, res) => {
   }
 };
 
+const getNotesInNotebook = async (req, res) => {
+  const notebookId = req.params.id;
+
+  try {
+    const notes = await Note.find({
+      notebookId: notebookId,
+      deletedAt: null,
+    }).sort({
+      createdAt: "desc",
+    });
+    res.status(200).json({ data: notes });
+  } catch (error) {
+    res.status(400).json({ message: "Something went wrong." });
+  }
+};
+
 module.exports = {
   createNotebook,
   getNotebooks,
@@ -172,4 +191,5 @@ module.exports = {
   deleteNotebook,
   permanentDeleteNotebook,
   restoreNotebook,
+  getNotesInNotebook,
 };

@@ -8,6 +8,7 @@ const {
   updateNotebook,
   restoreNotebook,
   permanentDeleteNotebook,
+  getNotesInNotebook,
 } = require("../controllers/notebook.controller");
 const { isAuthenticated } = require("../middlewares/auth.middleware");
 
@@ -23,6 +24,8 @@ router
 router
   .route("/permanent-delete/:id")
   .delete(isAuthenticated, getNotebookById, permanentDeleteNotebook);
+
+router.route("/:id/notes").get(isAuthenticated, getNotesInNotebook);
 
 router
   .route("/:id")

@@ -2,7 +2,7 @@ const Chunk = require("../models/chunks.model");
 const splitter = require("./textSplitter.util");
 const embeddings = require("./embeddings.util");
 
-const chunkGenerator = async (content, noteId, userId) => {
+const chunkGenerator = async (content, noteId, userId, notebookId) => {
   try {
     const chunks = await splitter.splitText(content);
 
@@ -13,6 +13,7 @@ const chunkGenerator = async (content, noteId, userId) => {
           noteId: noteId,
           userId: userId,
           text: chunk,
+          notebookId: notebookId ? notebookId : null,
           embedding: embeddingVector,
         });
 

@@ -2,71 +2,123 @@ import PagesLayout from "../PagesLayout";
 import { useParams } from "react-router";
 import type { Note, Notebook } from "@/lib/types";
 import NoteField from "@/components/notes/note-field";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreateNote from "@/components/notes/create-note";
 import { DndProvider } from "react-dnd";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { MultiBackend } from "react-dnd-multi-backend";
 import Notes from "@/components/notes/notes";
-
-const notebooks = [
-  {
-    id: 1,
-    title: "Work",
-    description: "My first notebook description",
-    created_at: "2025-05-18T14:33:08.979284Z",
-    updated_at: "2025-05-18T14:33:08.979284Z",
-  },
-] as Notebook[];
-
-const initialNotes = [
-  {
-    id: 1,
-    notebook: 1,
-    title: "Note 1",
-    content: "My first note description",
-    type: "text",
-    created_at: "2025-05-18T14:33:08.979284Z",
-  },
-  {
-    id: 2,
-    notebook: 1,
-    title: "Note 2",
-    content: "My second note description",
-    type: "text",
-    created_at: "2025-05-18T14:33:08.979284Z",
-  },
-] as Note[];
+import useSWR from "swr";
+import fetcher from "@/lib/fetcher";
 
 export default function Notebook() {
   const { id } = useParams();
 
-  const [openNewNoteDialog, setOpenNewNoteDialog] = useState<boolean>(false);
-  const [notes, setNotes] = useState<Note[]>([...initialNotes]);
+  return (
+    <PagesLayout page={""}>
+      <FetchNotes id={id!} />
+    </PagesLayout>
+  );
+}
 
-  const currentNotebook = notebooks.find((item) => item.id === Number(id));
+function FetchNotes({ id }: { id: string }) {
+  const {
+    data: notes,
+    isLoading,
+    error,
+  } = useSWR(
+    `${import.meta.env.VITE_API_URL}/${
+      import.meta.env.VITE_API_VERSION
+    }/notebooks/${id}/notes`,
+    fetcher
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <p>Something went wrong</p>
+      </div>
+    );
+  }
+
+  if (notes.data) {
+    return <DisplayNotes notes={notes.data} notebookId={id} />;
+  }
+}
+
+function DisplayNotes({
+  notes,
+  notebookId,
+}: {
+  notes: Note[];
+  notebookId: string;
+}) {
+  const [notesState, setNotesState] = useState<Note[]>(notes);
+  const [openNewNoteDialog, setOpenNewNoteDialog] = useState<boolean>(false);
+
+  useEffect(() => {
+    setNotesState(notes);
+  }, [notes]);
 
   return (
-    <PagesLayout page={currentNotebook?.title ? currentNotebook.title : ""}>
+    <>
       <div>
         {/* Create new note field */}
-        <NoteField
+        <NotebookNoteField
+          id={notebookId}
           setOpenNewNoteDialog={setOpenNewNoteDialog}
-          title={currentNotebook?.title}
         />
         {/* Display notes */}
         <section>
           <DndProvider options={HTML5toTouch} backend={MultiBackend}>
-            {notes.length > 0 && <Notes notes={notes} setNotes={setNotes} />}
+            <Notes notes={notesState} setNotes={setNotesState} />
           </DndProvider>
         </section>
-        {/* note: notes should be draggable */}
       </div>
       <CreateNote
         open={openNewNoteDialog}
         setOpen={setOpenNewNoteDialog}
-        setNotes={setNotes}
+        setNotes={setNotesState}
+        notebookId={notebookId}
       />
-    </PagesLayout>
+    </>
+  );
+}
+
+function NotebookNoteField({
+  id,
+  setOpenNewNoteDialog,
+}: {
+  id: string;
+  setOpenNewNoteDialog: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const {
+    data: notebook,
+    isLoading,
+    error,
+  } = useSWR(
+    `${import.meta.env.VITE_API_URL}/${
+      import.meta.env.VITE_API_VERSION
+    }/notebooks/${id}`,
+    fetcher
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Something went wrong</div>;
+  }
+
+  return (
+    <NoteField
+      setOpenNewNoteDialog={setOpenNewNoteDialog}
+      title={notebook.data.title}
+    />
   );
 }

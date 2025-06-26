@@ -24,9 +24,10 @@ export interface Note {
 }
 
 export interface Notebook {
-  id: number;
+  _id: string;
   title: string;
   description: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt?: string;
+  deletedAt?: string;
 }

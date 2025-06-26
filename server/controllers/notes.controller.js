@@ -3,6 +3,7 @@ const logger = require("../utilities/logger.util");
 const chunkGenerator = require("../utilities/chunkGenerator.util");
 const Chunk = require("../models/chunks.model");
 const Notebook = require("../models/notebooks.model");
+const _ = require("lodash");
 
 const getNoteById = async (req, res, next) => {
   try {
@@ -83,7 +84,7 @@ const removeFromNotebook = async (req, res) => {
 
 const createNote = async (req, res) => {
   try {
-    const { title, content, type, items } = req.body;
+    const { title, content, type, items, notebookId } = req.body;
 
     const newNote = new Note({
       userId: req.user.id,
@@ -91,11 +92,12 @@ const createNote = async (req, res) => {
       content,
       type,
       items,
+      notebookId: notebookId ? notebookId : null,
     });
 
     const note = await newNote.save();
 
-    await chunkGenerator(content, note._id, req.user.id);
+    await chunkGenerator(content, note._id, req.user.id, notebookId);
 
     res.status(200).json({ data: note, message: "Note created successfully" });
   } catch (error) {
@@ -184,6 +186,23 @@ const restoreNote = async (req, res) => {
     const note = await Note.findByIdAndUpdate(req.params.id, {
       deletedAt: null,
     });
+
+    //If the note belong to a notebook that don't exist (or moved to bin), set notebook to null
+    if (note.notebookId) {
+      //Find the notebook
+      const fetchNotebook = await Notebook.findById(note.notebookId);
+
+      if (fetchNotebook && !_.isNull(fetchNotebook.deletedAt)) {
+        note.notebookId = null;
+        await note.save();
+      }
+
+      //if the notebook doesn't exist (permanently deleted)
+      if (!fetchNotebook) {
+        note.notebookId = null;
+        await note.save();
+      }
+    }
 
     await Chunk.updateMany({ noteId: req.params.id }, { deletedAt: null });
 

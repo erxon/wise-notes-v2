@@ -224,10 +224,12 @@ export default function CreateNote({
   open,
   setOpen,
   setNotes,
+  notebookId,
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
+  notebookId?: string;
 }) {
   const [isAdding, setIsAdding] = useState<boolean>(false);
 
@@ -252,6 +254,7 @@ export default function CreateNote({
         {
           title: note.title,
           content: note.content,
+          notebookId: notebookId ? notebookId : null,
         },
         {
           withCredentials: true,
