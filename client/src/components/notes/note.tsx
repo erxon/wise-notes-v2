@@ -7,6 +7,7 @@ import TooltipWrapper from "../utility-components/TooltipWrapper";
 import { useState } from "react";
 import EditNoteDialog from "./dialogs/edit-note";
 import DeleteNoteDialog from "./dialogs/delete-note";
+import MoveNote from "./dialogs/move-note";
 
 export default function NoteCard({
   note,
@@ -21,6 +22,8 @@ export default function NoteCard({
 }) {
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [openMoveNoteDialog, setOpenMoveNoteDialog] = useState<boolean>(false);
+  const [noteToMove, setNoteToMove] = useState<Note | null>(null);
 
   return (
     <>
@@ -58,7 +61,14 @@ export default function NoteCard({
             </Button>
           </TooltipWrapper>
           <TooltipWrapper content="Move note">
-            <Button size={"icon"} variant={"ghost"}>
+            <Button
+              onClick={() => {
+                setNoteToMove(note);
+                setOpenMoveNoteDialog(true);
+              }}
+              size={"icon"}
+              variant={"ghost"}
+            >
               <CornerUpRight />
             </Button>
           </TooltipWrapper>
@@ -76,6 +86,11 @@ export default function NoteCard({
         isOpen={openDeleteDialog}
         setIsOpen={setOpenDeleteDialog}
         setNotes={setNotes}
+      />
+      <MoveNote
+        open={openMoveNoteDialog}
+        setOpen={setOpenMoveNoteDialog}
+        noteToMove={noteToMove!}
       />
     </>
   );

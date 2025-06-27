@@ -124,6 +124,11 @@ function DeletedNotebook({ notebook }: { notebook: Notebook }) {
         mutate(
           `${import.meta.env.VITE_API_URL}/${
             import.meta.env.VITE_API_VERSION
+          }/bin/`
+        );
+        mutate(
+          `${import.meta.env.VITE_API_URL}/${
+            import.meta.env.VITE_API_VERSION
           }/bin/notebooks`
         );
         toast.success(response.data.message);
