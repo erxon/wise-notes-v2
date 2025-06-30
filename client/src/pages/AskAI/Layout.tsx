@@ -4,7 +4,7 @@ import useSWR, { mutate } from "swr";
 import type { Chat } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 
@@ -77,10 +77,6 @@ function HistoryItem({
     setMouseOver(false);
   };
 
-  const handleClick = () => {
-    navigate(`/ask-ai/${chat._id}`);
-  };
-
   const handleDelete = async () => {
     setIsLoading(true);
 
@@ -122,12 +118,12 @@ function HistoryItem({
       onMouseLeave={handleMouseLeave}
       className="flex items-center"
     >
-      <div
-        onClick={handleClick}
+      <Link
+        to={`/ask-ai/${chat._id}`}
         className="p-2 hover:bg-secondary rounded-lg mb-1 grow"
       >
         <p className="grow">{chat.query}</p>
-      </div>
+      </Link>
       {mouseOver && (
         <Button
           disabled={isLoading}
