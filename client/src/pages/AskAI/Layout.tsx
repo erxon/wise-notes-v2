@@ -1,5 +1,5 @@
 import fetcher from "@/lib/fetcher";
-import { MessageCircleQuestion, Trash2Icon } from "lucide-react";
+import { MessageCircleQuestion, PlusIcon, Trash2Icon } from "lucide-react";
 import useSWR, { mutate } from "swr";
 import type { Chat } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   return (
     <div className="grid lg:grid-cols-12">
@@ -19,6 +20,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <p>Ask AI about your notes</p>
         </div>
         <div>
+          <Button
+            onClick={() => navigate("/ask-ai")}
+            variant={"outline"}
+            className="mb-2"
+          >
+            <span>New query</span>
+            <PlusIcon />
+          </Button>
           <History currentChat={id} />
         </div>
       </div>{" "}
