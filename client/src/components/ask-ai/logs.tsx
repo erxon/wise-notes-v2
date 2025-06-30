@@ -1,16 +1,6 @@
-import { useLLMOutput } from "@llm-ui/react";
-import { markdownLookBack } from "@llm-ui/markdown";
-import { useStreamExample, throttleBasic } from "@llm-ui/react";
-import Markdown from "./markdown";
+import ReactMarkdown from "react-markdown";
 import type { Chat } from "@/lib/types";
-
-const throttle = throttleBasic({
-  readAheadChars: 5,
-  targetBufferChars: 2,
-  adjustPercentage: 0.35,
-  frameLookBackMs: 10000,
-  windowLookBackMs: 10000,
-});
+import remarkGfm from "remark-gfm";
 
 export default function Logs({ chat }: { chat: Chat }) {
   return (
@@ -24,26 +14,11 @@ export default function Logs({ chat }: { chat: Chat }) {
 }
 
 function Answer({ answer }: { answer: string }) {
-  const { isStreamFinished, output } = useStreamExample(
-    answer.split("</think>")[1]
-  );
-  const { blockMatches } = useLLMOutput({
-    llmOutput: output,
-    blocks: [],
-    fallbackBlock: {
-      component: Markdown, // from Step 1
-      lookBack: markdownLookBack(),
-    },
-    isStreamFinished,
-    throttle: throttle,
-  });
+  const actualAnswer = answer.split("</think>")[1];
 
   return (
     <div>
-      {blockMatches.map((blockMatch, index) => {
-        const Component = blockMatch.block.component;
-        return <Component key={index} blockMatch={blockMatch} />;
-      })}
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{actualAnswer}</ReactMarkdown>
     </div>
   );
 }
