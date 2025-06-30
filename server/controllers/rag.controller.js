@@ -5,6 +5,7 @@ const { StringOutputParser } = require("@langchain/core/output_parsers");
 const { RunnablePassthrough } = require("@langchain/core/runnables");
 const logger = require("../utilities/logger.util");
 const { ObjectId } = require("mongodb");
+const Chat = require("../models/chats.model");
 
 const query = async (req, res) => {
   const { query } = req.body;
@@ -42,7 +43,15 @@ const query = async (req, res) => {
 
     const response = await chain.invoke({ question: query });
 
-    res.json({ answer: response });
+    const newChat = new Chat({
+      userId: userId,
+      query: query,
+      answer: response,
+    });
+
+    const savedChat = await newChat.save();
+
+    res.json({ answer: response, data: savedChat });
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
