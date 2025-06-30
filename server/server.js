@@ -53,9 +53,7 @@ app.use(
       ttl: 1000 * 60 * 60,
     }),
     cookie: {
-      secure: false,
       maxAge: 1000 * 60 * 60,
-      sameSite: "lax",
     },
   })
 );
