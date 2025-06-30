@@ -35,6 +35,7 @@ app.use(bodyParser.json());
 app.use(
   cors({
     origin: process.env.ORIGIN,
+    credentials: true,
   })
 );
 
@@ -51,6 +52,7 @@ app.use(
       ttl: 1000 * 60 * 60,
     }),
     cookie: {
+      httpOnly: false,
       maxAge: 1000 * 60 * 60,
     },
   })
