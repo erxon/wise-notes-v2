@@ -3,6 +3,7 @@ import { markdownLookBack } from "@llm-ui/markdown";
 import { useStreamExample, throttleBasic } from "@llm-ui/react";
 import Markdown from "./markdown";
 import type { Chat } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 const throttle = throttleBasic({
   readAheadChars: 5,
@@ -13,7 +14,13 @@ const throttle = throttleBasic({
 });
 
 export default function Logs({ chat }: { chat: Chat }) {
-  const [thinking, actualAnswer] = chat.answer.split("</think>");
+  const [chatState, setChatState] = useState<Chat>(chat);
+
+  useEffect(() => {
+    setChatState(chat);
+  }, [chat]);
+
+  const [thinking, actualAnswer] = chatState.answer.split("</think>");
 
   const { isStreamFinished, output } = useStreamExample(actualAnswer);
   const { blockMatches } = useLLMOutput({
@@ -30,7 +37,7 @@ export default function Logs({ chat }: { chat: Chat }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="bg-gray-100 dark:bg-black dark:outline rounded-full p-3 w-fit self-end">
-        {chat.query}
+        {chatState.query}
       </div>
       <div>
         {blockMatches.map((blockMatch, index) => {
