@@ -3,14 +3,13 @@ import { markdownLookBack } from "@llm-ui/markdown";
 import { useStreamExample, throttleBasic } from "@llm-ui/react";
 import Markdown from "./markdown";
 import type { Chat } from "@/lib/types";
-import { useCallback, useEffect, useState } from "react";
 
 const throttle = throttleBasic({
-  readAheadChars: 5,
-  targetBufferChars: 2,
+  readAheadChars: 2,
+  targetBufferChars: 1,
   adjustPercentage: 0.35,
   frameLookBackMs: 10000,
-  windowLookBackMs: 10000,
+  windowLookBackMs: 7000,
 });
 
 export default function Logs({ chat }: { chat: Chat }) {
@@ -19,25 +18,16 @@ export default function Logs({ chat }: { chat: Chat }) {
       <div className="bg-gray-100 dark:bg-black dark:outline rounded-full p-3 w-fit self-end">
         {chat.query}
       </div>
-      <Answer answer={chat.answer} />
+      <Answer key={chat._id} answer={chat.answer} />
     </div>
   );
 }
 
 function Answer({ answer }: { answer: string }) {
-  const [answerState, setAnswerState] = useState<string>(answer);
-
-  const resetAnswerState = useCallback(async () => {
-    setAnswerState(answer);
-  }, [answer]);
-
-  useEffect(() => {
-    resetAnswerState();
-  }, [resetAnswerState]);
-
   const { isStreamFinished, output } = useStreamExample(
-    answerState.split("</think>")[1]
+    answer.split("</think>")[1]
   );
+
   const { blockMatches } = useLLMOutput({
     llmOutput: output,
     blocks: [],
