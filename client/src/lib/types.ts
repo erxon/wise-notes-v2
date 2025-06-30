@@ -31,3 +31,10 @@ export interface Notebook {
   updatedAt?: string;
   deletedAt?: string;
 }
+
+export interface Chat {
+  _id: string;
+  userId: string;
+  query: string;
+  answer: string;
+}

@@ -1,33 +1,43 @@
-interface Chat {
-  id: number;
-  conversation: Conversation[];
-}
+import { useLLMOutput } from "@llm-ui/react";
+import { markdownLookBack } from "@llm-ui/markdown";
+import { useStreamExample, throttleBasic } from "@llm-ui/react";
+import Markdown from "./markdown";
+import type { Chat } from "@/lib/types";
 
-interface Conversation {
-  id: number;
-  question: string;
-  answer: string;
-}
+const throttle = throttleBasic({
+  readAheadChars: 5,
+  targetBufferChars: 2,
+  adjustPercentage: 0.35,
+  frameLookBackMs: 20000,
+  windowLookBackMs: 10000,
+});
 
-export default function Logs({ chat }: { chat: Chat | undefined }) {
+export default function Logs({ chat }: { chat: Chat }) {
+  const [thinking, actualAnswer] = chat.answer.split("</think>");
+
+  const { isStreamFinished, output } = useStreamExample(actualAnswer);
+  const { blockMatches } = useLLMOutput({
+    llmOutput: output,
+    blocks: [],
+    fallbackBlock: {
+      component: Markdown, // from Step 1
+      lookBack: markdownLookBack(),
+    },
+    isStreamFinished,
+    throttle: throttle,
+  });
+
   return (
     <div className="flex flex-col gap-4">
-      {chat ? (
-        chat.conversation.map((item: Conversation) => (
-          <div key={item.id} className="flex flex-col gap-4">
-            <p className="w-fit p-2 rounded-lg bg-secondary self-end">
-              {item.question}
-            </p>
-            <p>{item.answer}</p>
-          </div>
-        ))
-      ) : (
-        <div className="flex flex-col gap-2 items-center">
-          <p className="text-sm text-neutral-500 dark:text-neutral-300">
-            Ask AI any question about your notes
-          </p>
-        </div>
-      )}
+      <div className="bg-gray-100 dark:bg-black dark:outline rounded-full p-3 w-fit self-end">
+        {chat.query}
+      </div>
+      <div>
+        {blockMatches.map((blockMatch, index) => {
+          const Component = blockMatch.block.component;
+          return <Component key={index} blockMatch={blockMatch} />;
+        })}
+      </div>
     </div>
   );
 }

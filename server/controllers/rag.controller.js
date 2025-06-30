@@ -24,7 +24,7 @@ const query = async (req, res) => {
         `You are an AI assistant for answering questions based 
             on the provided context from my personal notes. Answer the question thruthfully and concisely
             based *only* on the context provided. If the answer is not in the context, state
-            that you don't have enough information. Do not make up answers.
+            that you don't have enough information. Do not make up answers. Please add structure the notes accordingly, and highlight important terms.
             Context: {context}`,
       ],
       ["human", "{question}"],

@@ -10,6 +10,7 @@ const notes = require("./routes/notes.route");
 const test = require("./routes/test.route");
 const rag = require("./routes/rag.route");
 const notebook = require("./routes/notebook.route");
+const chats = require("./routes/chats.route");
 const initializePassport = require("./config/passport.config");
 const passport = require("passport");
 const session = require("express-session");
@@ -64,6 +65,7 @@ app.use(passport.session());
 
 // My Routes
 app.use(`${version}/users`, userRoute);
+app.use(`${version}/chats`, chats);
 app.use(`${version}/notebooks`, notebook);
 app.use(`${version}/auth`, auth);
 app.use(`${version}/protected`, protected);
