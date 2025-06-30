@@ -15,14 +15,16 @@ const throttle = throttleBasic({
 
 export default function Logs({ chat }: { chat: Chat }) {
   const [chatState, setChatState] = useState<Chat>(chat);
+  const [answer, setAnswer] = useState<string>("");
 
   useEffect(() => {
+    const [thinking, actualAnswer] = chatState.answer.split("</think>");
+
     setChatState(chat);
-  }, [chat]);
+    setAnswer(actualAnswer);
+  }, [chat, chatState.answer]);
 
-  const [thinking, actualAnswer] = chatState.answer.split("</think>");
-
-  const { isStreamFinished, output } = useStreamExample(actualAnswer);
+  const { isStreamFinished, output } = useStreamExample(answer);
   const { blockMatches } = useLLMOutput({
     llmOutput: output,
     blocks: [],
