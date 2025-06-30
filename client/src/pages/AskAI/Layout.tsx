@@ -79,7 +79,6 @@ function HistoryItem({
 
   const handleClick = () => {
     navigate(`/ask-ai/${chat._id}`);
-    window.location.reload();
   };
 
   const handleDelete = async () => {
