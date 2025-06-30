@@ -22,7 +22,7 @@ export default function Logs({ chat }: { chat: Chat }) {
 
     setChatState(chat);
     setAnswer(actualAnswer);
-  }, [chat, chatState.answer]);
+  }, [chat]);
 
   const { isStreamFinished, output } = useStreamExample(answer);
   const { blockMatches } = useLLMOutput({
