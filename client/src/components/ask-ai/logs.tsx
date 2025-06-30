@@ -8,7 +8,7 @@ const throttle = throttleBasic({
   readAheadChars: 5,
   targetBufferChars: 2,
   adjustPercentage: 0.35,
-  frameLookBackMs: 20000,
+  frameLookBackMs: 10000,
   windowLookBackMs: 10000,
 });
 
@@ -24,7 +24,9 @@ export default function Logs({ chat }: { chat: Chat }) {
 }
 
 function Answer({ answer }: { answer: string }) {
-  const { isStreamFinished, output } = useStreamExample(answer);
+  const { isStreamFinished, output } = useStreamExample(
+    answer.split("</think>")[1]
+  );
   const { blockMatches } = useLLMOutput({
     llmOutput: output,
     blocks: [],
