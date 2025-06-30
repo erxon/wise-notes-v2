@@ -18,7 +18,7 @@ export default function Logs({ chat }: { chat: Chat }) {
   const [answer, setAnswer] = useState<string>("");
 
   useEffect(() => {
-    const [thinking, actualAnswer] = chatState.answer.split("</think>");
+    const [thinking, actualAnswer] = chat.answer.split("</think>");
 
     setChatState(chat);
     setAnswer(actualAnswer);
