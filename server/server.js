@@ -52,7 +52,8 @@ app.use(
       ttl: 1000 * 60 * 60,
     }),
     cookie: {
-      httpOnly: false,
+      sameSite: "none",
+      secure: true,
       maxAge: 1000 * 60 * 60,
     },
   })
