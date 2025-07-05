@@ -37,7 +37,6 @@ const embeddings = new HuggingFaceInferenceEmbeddings({
 module.exports = embeddings;
 
 ```
-![[Pasted image 20250703140341.png]]
 
 I created Chunks collection to store the chunks of texts and their embeddings. Texts are chunked using `RecursiveCharacterTextSplitter` class from *LangChain textsplitters* library. Chunking is important to improve computational processing. It will allow the RAG to retrieve significant or important pieces of texts without seeing or analyzing the entire note (if it is too long). RAG without chunking is like finding information in a book without chapters, sections, etc. It is not that important to the application since it is only a simple note taking app, but I think it is a good practice and a good concept to apply. 
 
@@ -174,11 +173,8 @@ const getVectorStore = async () => {
 module.exports = getVectorStore;
 ```
 
-`MongoDBAtlasVectorSearch` is the class used from LangChain library. It accepts two parameters. The embeddings (*server\utilities\embeddings.util.js*) and the vector search index properties. This should be the same with the *index overview* in the *vector search index* at your MongoDB Atlas cluster. In my case it looks something like this:
+`MongoDBAtlasVectorSearch` is the class used from LangChain library. It accepts two parameters. The embeddings (*server\utilities\embeddings.util.js*) and the vector search index properties. This should be the same with the *index overview* in the *vector search index* at your MongoDB Atlas cluster.
 
-![[Pasted image 20250703152734.png]]
-
-It is the same here:
 ```javascript
 ...
 const vectorStore = new MongoDBAtlasVectorSearch(embeddings, {
