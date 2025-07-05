@@ -313,7 +313,7 @@ const newChat = new Chat({
     const savedChat = await newChat.save();
 ```
 
-**References
+**References**
 
 *RunnablePassthrough*
 https://python.langchain.com/api_reference/core/runnables/langchain_core.runnables.passthrough.RunnablePassthrough.html
