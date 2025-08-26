@@ -58,7 +58,7 @@ export default function Profile() {
       {/* Avatar */}
       <div className="mb-8 flex flex-col items-center md:block">
         <Avatar className="w-16 h-16 mb-4">
-          <AvatarImage src={user.avatar} />
+          <AvatarImage src={user.profilePicture} />
           <AvatarFallback>
             {user.firstName
               .charAt(0)
@@ -77,13 +77,13 @@ export default function Profile() {
       <div className="flex flex-col gap-4 mb-4">
         <UserInformationEditor user={data} />
         {/* Email */}
-        <div>
+        {/* <div>
           <Label>Email</Label>
           <p className="mb-2">{user.email}</p>
           <Link to={"/profile/email"}>
             <Button variant={"secondary"}>Change email</Button>
           </Link>
-        </div>
+        </div> */}
         {/* Password */}
         <div>
           <Label className="mb-2">Password</Label>
@@ -162,7 +162,7 @@ function UserInformationEditor({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col gap-2 items-start"
+          className="flex flex-col w-full gap-2 md:items-start"
         >
           <FormField
             control={form.control}
