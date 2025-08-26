@@ -1,6 +1,4 @@
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { ImageIcon, ListIcon } from "lucide-react";
 
 export default function NoteField({
   title,
@@ -12,14 +10,17 @@ export default function NoteField({
   return (
     <>
       <div className="flex flex-col gap-1 items-center w-full">
-        <h1 className="text-2xl font-semibold">{title}</h1>
+        <h1 className="text-2xl font-semibold mb-4">{title}</h1>
         <Input
           role="button"
           readOnly
           onClick={() => setOpenNewNoteDialog(true)}
           placeholder="Note"
-          className="md:w-[300px] w-full"
+          className="md:w-[400px] w-full"
         />
+        {/* 
+        Add image or list
+
         <div className="flex gap-1">
           <Button variant={"ghost"} size={"sm"}>
             <ImageIcon className="w-6 h-6" />
@@ -29,7 +30,8 @@ export default function NoteField({
             <ListIcon className="w-6 h-6" />
             List
           </Button>
-        </div>
+        </div> 
+        */}
       </div>
     </>
   );

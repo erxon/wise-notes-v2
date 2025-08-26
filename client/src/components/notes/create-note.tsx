@@ -12,23 +12,14 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Note } from "@/lib/types";
-import { ImageIcon, ListChecks, Pencil, Plus, Text, Trash } from "lucide-react";
-import TooltipWrapper from "./tooltip";
-import { Checkbox } from "../ui/checkbox";
+// import { ImageIcon, ListChecks, Pencil, Plus, Text, Trash } from "lucide-react";
+// import TooltipWrapper from "./tooltip";
+// import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 
-/* 
-TODO 
-
-[✔️] add option to user to turn a note into list items or text
-[] add image upload to new note dialog
-[] add tags to new note dialog 
-[] add color picker to new note dialog
-
-*/
-
+/*
 interface ListItemType {
   id: number;
   item: string;
@@ -93,7 +84,8 @@ function Actions({
     </div>
   );
 }
-
+  */
+/*
 function ListItemInput({
   note,
   setNote,
@@ -139,7 +131,8 @@ function ListItemInput({
     </div>
   );
 }
-
+*/
+/*
 function ListItem({
   note,
   item,
@@ -175,7 +168,7 @@ function ListItem({
       </div>
     </div>
   );
-}
+}*/
 
 function TextNote({
   note,
@@ -198,6 +191,7 @@ function TextNote({
   );
 }
 
+/*
 function ListNote({
   note,
   setNote,
@@ -219,6 +213,7 @@ function ListNote({
     </div>
   );
 }
+*/
 
 export default function CreateNote({
   open,
@@ -262,7 +257,6 @@ export default function CreateNote({
       );
 
       if (response.status === 200) {
-        console.log(response.data);
         const date = new Date().toLocaleString();
         toast.success(response.data.message, {
           description: `New note added ${date}`,
@@ -317,8 +311,9 @@ export default function CreateNote({
           placeholder="Type the title of your note here"
         />
         {note.type === "text" && <TextNote note={note} setNote={setNote} />}
-        {note.type === "list" && <ListNote note={note} setNote={setNote} />}
-        <Actions type={note.type} setNote={setNote} />
+        {/* {note.type === "list" && <ListNote note={note} setNote={setNote} />} */}
+
+        {/* <Actions type={note.type} setNote={setNote} /> */}
         <DialogFooter>
           <DialogClose asChild>
             <Button variant={"secondary"}>Cancel</Button>
