@@ -31,7 +31,7 @@ const data = {
   },
   main: [
     {
-      title: "Quick notes",
+      title: "Notes",
       icon: NotepadText,
       url: "/",
     },
@@ -99,7 +99,7 @@ export default function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.main} />
-        <NavNotebooks items={data.notebooks} />
+        <NavNotebooks />
         <NavSecondary items={data.secondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

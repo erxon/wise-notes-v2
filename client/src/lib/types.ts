@@ -14,7 +14,7 @@ export interface ListItem {
 
 export interface Note {
   _id: string;
-  notebook?: string;
+  notebookId?: string;
   title: string;
   content?: string;
   list?: ListItem[];

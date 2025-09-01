@@ -3,9 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import CreateNote from "@/components/notes/create-note";
 import type { Note } from "@/lib/types";
 import Notes from "@/components/notes/notes";
-import { DndProvider } from "react-dnd";
-import { MultiBackend } from "react-dnd-multi-backend";
-import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import NoteField from "@/components/notes/note-field";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
@@ -49,7 +46,7 @@ export default function Home() {
 
   return (
     <>
-      <PagesLayout page="Quick Notes">
+      <PagesLayout page="Notes">
         <div className="flex flex-col gap-12">
           <div className="flex flex-col gap-4 items-center">
             <NoteField
@@ -62,11 +59,7 @@ export default function Home() {
           {isLoading && <NotesLoading />}
           {notes && !isLoading && (
             <section>
-              <DndProvider options={HTML5toTouch} backend={MultiBackend}>
-                {notes.length > 0 && (
-                  <Notes notes={notes} setNotes={setNotes} />
-                )}
-              </DndProvider>
+              {notes.length > 0 && <Notes notes={notes} setNotes={setNotes} />}
             </section>
           )}
         </div>

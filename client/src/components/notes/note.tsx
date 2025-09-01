@@ -8,6 +8,11 @@ import { useState } from "react";
 import EditNoteDialog from "./dialogs/edit-note";
 import DeleteNoteDialog from "./dialogs/delete-note";
 import MoveNote from "./dialogs/move-note";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import clsx from "clsx";
+import { GripVertical } from "lucide-react";
+import NotebookName from "./notebook-name";
 
 export default function NoteCard({
   note,
@@ -24,16 +29,42 @@ export default function NoteCard({
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openMoveNoteDialog, setOpenMoveNoteDialog] = useState<boolean>(false);
   const [noteToMove, setNoteToMove] = useState<Note | null>(null);
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: note._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: transform ? 999 : 0,
+  };
 
   return (
     <>
-      <div className="flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300 bg-white dark:bg-neutral-900">
-        <div className="flex flex-col gap-2 p-2">
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        className={clsx(
+          isDragging ? "z-10 relative" : "z-0",
+          "flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300 bg-white dark:bg-neutral-900 h-[250px]"
+        )}
+      >
+        <div {...listeners}>
+          <GripVertical className="w-4 h-4" />
+        </div>
+        <div className="flex flex-col gap-2 p-2 grow-1">
           <div>
             <h1 className="text-lg font-medium">{note.title}</h1>
             <p className="text-sm text-neutral-500">
               {timeLapsed(note.createdAt)}
             </p>
+            {note.notebookId && <NotebookName id={note.notebookId} />}
           </div>
           {children}
         </div>
