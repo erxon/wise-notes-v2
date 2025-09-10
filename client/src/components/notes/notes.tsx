@@ -1,6 +1,5 @@
 import type { Note } from "@/lib/types";
 import NoteText from "./note-text";
-import NoteList from "./note-list";
 import SortableLayoutWrapper from "../utility-components/SortableLayoutWrapper";
 
 function DisplayNote({
@@ -14,7 +13,6 @@ function DisplayNote({
     <>
       <div>
         {note.type === "text" && <NoteText setNotes={setNotes} note={note} />}
-        {note.type === "list" && <NoteList note={note} />}{" "}
       </div>
     </>
   );

@@ -22,6 +22,7 @@ export interface Note {
   updatedAt?: string;
   deletedAt?: string;
   type: "text" | "list";
+  sortKey: number;
 }
 
 export interface Notebook {

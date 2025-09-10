@@ -11,6 +11,7 @@ const {
   restoreNote,
   moveNotesToNotebook,
   removeFromNotebook,
+  reorderNotes,
 } = require("../controllers/notes.controller");
 const {
   addItemToListNote,
@@ -34,6 +35,7 @@ router.route("/restore/:id").put(isAuthenticated, restoreNote);
 router.put("/organize", isAuthenticated, moveNotesToNotebook);
 
 router.put("/remove-from-notebook", isAuthenticated, removeFromNotebook);
+router.route("/reorder").put(isAuthenticated, reorderNotes);
 
 router
   .route("/:id")

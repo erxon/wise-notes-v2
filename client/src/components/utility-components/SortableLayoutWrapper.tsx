@@ -14,6 +14,7 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { Note } from "@/lib/types";
+import axios from "axios";
 
 export default function SortableLayoutWrapper({
   children,
@@ -32,6 +33,7 @@ export default function SortableLayoutWrapper({
   );
 
   const items = notes.map((note) => note._id);
+  console.log(notes);
 
   return (
     <DndContext
@@ -48,13 +50,31 @@ export default function SortableLayoutWrapper({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
-      setNotes((items) => {
-        const oldIndex = items.findIndex((note) => note._id === active.id);
-        const newIndex = items.findIndex((note) => note._id === over?.id);
-
-        return arrayMove(items, oldIndex, newIndex);
-      });
+    if (!over) {
+      return;
     }
+
+    if (active.id !== over?.id) {
+      const oldIndex = notes.findIndex((note) => note._id === active.id);
+      const newIndex = notes.findIndex((note) => note._id === over.id);
+
+      const newNoteOrder = arrayMove(items, oldIndex, newIndex).map((id) => {
+        return notes.find((note) => note._id === id)!;
+      });
+
+      setNotes(newNoteOrder);
+      reorderNotes(newNoteOrder);
+    }
+  }
+  async function reorderNotes(newOrder: Note[]) {
+    await axios.put(
+      `${import.meta.env.VITE_API_URL}/${
+        import.meta.env.VITE_API_VERSION
+      }/notes/reorder`,
+      { newNoteOrder: newOrder },
+      {
+        withCredentials: true,
+      }
+    );
   }
 }

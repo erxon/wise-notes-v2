@@ -63,8 +63,8 @@ const removeFromNotebook = async (req, res) => {
         notebookId: null,
       }
     );
+
     logger.info("Notes removed successfully");
-    console.log(updateMany);
 
     const updateChunks = await Chunk.updateMany(
       { noteId: { $in: notes } },
@@ -111,7 +111,7 @@ const getNotes = async (req, res) => {
       userId: req.user.id,
       deletedAt: null,
     }).sort({
-      createdAt: "desc",
+      sortKey: "ascending",
     });
     res.status(200).json({ data: notes });
   } catch (error) {
@@ -233,6 +233,29 @@ const updateNote = async (req, res) => {
   }
 };
 
+const reorderNotes = async (req, res) => {
+  try {
+    const { newNoteOrder } = req.body;
+
+    const newNoteOrderSortKeys = newNoteOrder.map((note, index) => ({
+      id: note._id,
+      sortKey: index,
+    }));
+
+    const result = newNoteOrderSortKeys.map(async (object) => {
+      await Note.updateOne({ _id: object.id }, { sortKey: object.sortKey });
+    });
+
+    logger.info("Note reordered successfully");
+    res
+      .status(200)
+      .json({ data: result, message: "Note reordered successfully" });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
 module.exports = {
   getNoteById,
   createNote,
@@ -244,4 +267,5 @@ module.exports = {
   restoreNote,
   moveNotesToNotebook,
   removeFromNotebook,
+  reorderNotes,
 };
