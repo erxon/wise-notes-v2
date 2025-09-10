@@ -1,6 +1,6 @@
 import type { Note } from "@/lib/types";
 import { Button } from "../ui/button";
-import { Pencil, Trash } from "lucide-react";
+import { ExpandIcon, Pencil, Trash } from "lucide-react";
 import { timeLapsed } from "@/lib/utils";
 import { CornerUpRight } from "lucide-react";
 import TooltipWrapper from "../utility-components/TooltipWrapper";
@@ -13,6 +13,7 @@ import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
 import { GripVertical } from "lucide-react";
 import NotebookName from "./notebook-name";
+import ExpandedNote from "./dialogs/expanded-note";
 
 export default function NoteCard({
   note,
@@ -28,6 +29,7 @@ export default function NoteCard({
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openMoveNoteDialog, setOpenMoveNoteDialog] = useState<boolean>(false);
+  const [openExpandedNote, setOpenExpandedNote] = useState<boolean>(false);
   const [noteToMove, setNoteToMove] = useState<Note | null>(null);
   const {
     attributes,
@@ -103,6 +105,17 @@ export default function NoteCard({
               <CornerUpRight />
             </Button>
           </TooltipWrapper>
+          <TooltipWrapper content="View full note">
+            <Button
+              onClick={() => {
+                setOpenExpandedNote(true);
+              }}
+              size={"icon"}
+              variant={"ghost"}
+            >
+              <ExpandIcon />
+            </Button>
+          </TooltipWrapper>
         </div>
       </div>
       <EditNoteDialog
@@ -122,6 +135,11 @@ export default function NoteCard({
         open={openMoveNoteDialog}
         setOpen={setOpenMoveNoteDialog}
         noteToMove={noteToMove!}
+      />
+      <ExpandedNote
+        note={note}
+        isOpen={openExpandedNote}
+        setIsOpen={setOpenExpandedNote}
       />
     </>
   );

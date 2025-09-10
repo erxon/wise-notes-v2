@@ -18,6 +18,7 @@ import { Note } from "@/lib/types";
 import { Label } from "../ui/label";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
+import { ScrollArea } from "../ui/scroll-area";
 
 /*
 interface ListItemType {
@@ -187,6 +188,7 @@ function TextNote({
       value={note.content}
       name="content"
       placeholder="Content"
+      className="resize-none h-[200px] overflow-auto"
     />
   );
 }

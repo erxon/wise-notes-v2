@@ -6,12 +6,31 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router";
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileLayout from "./MobileLayout";
 
 export default function AskAI() {
-  const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  return (
+    <PagesLayout page="Ask AI">
+      {isMobile ? (
+        <MobileLayout>
+          <MainField />
+        </MobileLayout>
+      ) : (
+        <Layout>
+          <MainField />
+        </Layout>
+      )}
+    </PagesLayout>
+  );
+}
+
+function MainField() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setQuery(event.target.value);
@@ -47,23 +66,19 @@ export default function AskAI() {
   };
 
   return (
-    <PagesLayout page="Ask AI">
-      <Layout>
-        <div className="flex flex-col gap-3 items-center">
-          <h1 className="text-2xl font-semibold">Ask AI</h1>
-          <div className="flex flex-col gap-2 p-4 mx-2 rounded-lg shadow-lg items-start w-full lg:w-[550px]">
-            <Textarea
-              onChange={handleChange}
-              value={query}
-              placeholder="Type your question here..."
-              className="resize-none"
-            />
-            <Button disabled={isLoading} onClick={handleSend} size={"sm"}>
-              Ask
-            </Button>
-          </div>
-        </div>
-      </Layout>
-    </PagesLayout>
+    <div className="flex flex-col gap-3 items-center">
+      <h1 className="text-2xl font-semibold">Ask AI</h1>
+      <div className="flex flex-col gap-2 p-4 mx-2 rounded-lg shadow-lg items-start w-full lg:w-[550px]">
+        <Textarea
+          onChange={handleChange}
+          value={query}
+          placeholder="Type your question here..."
+          className="resize-none"
+        />
+        <Button disabled={isLoading} onClick={handleSend} size={"sm"}>
+          Ask
+        </Button>
+      </div>
+    </div>
   );
 }

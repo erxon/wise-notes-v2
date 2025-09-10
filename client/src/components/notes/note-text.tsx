@@ -17,7 +17,7 @@ export default function NoteText({
         {noteState.content && (
           <p className="text-sm break-words whitespace-pre-wrap">
             {noteState.content.length >= 50
-              ? noteState.content.substring(0, 50) + "..."
+              ? noteState.content.substring(0, 100) + "..."
               : noteState.content}
           </p>
         )}

@@ -1,50 +1,22 @@
-import { useLLMOutput } from "@llm-ui/react";
-import { markdownLookBack } from "@llm-ui/markdown";
-import { useStreamExample, throttleBasic } from "@llm-ui/react";
-import Markdown from "./markdown";
 import type { Chat } from "@/lib/types";
-
-const throttle = throttleBasic({
-  readAheadChars: 2,
-  targetBufferChars: 1,
-  adjustPercentage: 0.35,
-  frameLookBackMs: 10000,
-  windowLookBackMs: 7000,
-});
+import ReactMarkDown from "react-markdown";
+import { Separator } from "../ui/separator";
+import { ScrollArea } from "../ui/scroll-area";
 
 export default function Logs({ chat }: { chat: Chat }) {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="bg-gray-100 dark:bg-black dark:outline rounded-full p-3 w-fit self-end">
-        {chat.query}
-      </div>
-      <Answer key={chat._id} answer={chat.answer} />
-    </div>
-  );
-}
-
-function Answer({ answer }: { answer: string }) {
-  const { isStreamFinished, output } = useStreamExample(
-    answer.split("</think>")[1]
-  );
-
-  const { blockMatches } = useLLMOutput({
-    llmOutput: output,
-    blocks: [],
-    fallbackBlock: {
-      component: Markdown, // from Step 1
-      lookBack: markdownLookBack(),
-    },
-    isStreamFinished,
-    throttle: throttle,
-  });
+  const [think, answer] = chat.answer.split("</think>");
 
   return (
-    <div>
-      {blockMatches.map((blockMatch, index) => {
-        const Component = blockMatch.block.component;
-        return <Component key={index} blockMatch={blockMatch} />;
-      })}
-    </div>
+    <>
+      <ScrollArea className="mb-8 h-[700px]">
+        <p className="font-semibold p-2 bg-sky-300 dark:bg-sky-700 w-fit rounded-full mb-2">
+          {chat.query}
+        </p>
+        <Separator className="my-2" />
+        <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+          <ReactMarkDown>{answer}</ReactMarkDown>
+        </div>
+      </ScrollArea>
+    </>
   );
 }

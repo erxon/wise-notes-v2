@@ -4,9 +4,12 @@ import { useParams } from "react-router";
 import Logs from "@/components/ask-ai/logs";
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileLayout from "../MobileLayout";
 
 export default function Chat() {
   const { id } = useParams();
+  const isMobile = useIsMobile();
 
   const { data, isLoading, error } = useSWR(
     `${import.meta.env.VITE_API_URL}/${
@@ -25,15 +28,25 @@ export default function Chat() {
 
   return (
     <PagesLayout page="Ask AI">
-      <Layout>
-        <div className="flex flex-col items-center h-[700px]">
-          <h1 className="text-sm">Ask AI</h1>
-          <div className="w-full p-4">
-            <Logs chat={data.data} />
+      {isMobile ? (
+        <MobileLayout>
+          <div className="flex flex-col items-center h-[700px]">
+            <div className="w-full p-4">
+              <Logs chat={data.data} />
+            </div>
+            <div className="flex-grow" />
           </div>
-          <div className="flex-grow" />
-        </div>
-      </Layout>
+        </MobileLayout>
+      ) : (
+        <Layout>
+          <div className="flex flex-col items-center h-[700px]">
+            <div className="w-full p-4">
+              <Logs chat={data.data} />
+            </div>
+            <div className="flex-grow" />
+          </div>
+        </Layout>
+      )}
     </PagesLayout>
   );
 }
