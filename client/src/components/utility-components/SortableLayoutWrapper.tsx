@@ -33,7 +33,6 @@ export default function SortableLayoutWrapper({
   );
 
   const items = notes.map((note) => note._id);
-  console.log(notes);
 
   return (
     <DndContext

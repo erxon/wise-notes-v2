@@ -19,11 +19,16 @@ import PermanentDelete from "./Dialogs/PermanentDelete";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { mutate } from "swr";
+import { ExpandIcon } from "lucide-react";
+import ExpandedNote from "./Dialogs/ExpandedNote";
 
 export default function DeletedNote({ note }: { note: Note }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isOpenPermanentDeleteDialog, setIsOpenPermanentDeleteDialog] =
     useState<boolean>(false);
+  const [expandNote, setExpandNote] = useState<boolean>(false);
+  const [noteToExpand, setNoteToExpand] = useState<Note | null>(null);
+
   const deletedAt = new Date(note.deletedAt!).toLocaleString();
 
   const handlePermanentDelete = () => {
@@ -61,17 +66,26 @@ export default function DeletedNote({ note }: { note: Note }) {
     setIsLoading(false);
   };
 
+  const handleExpandNote = () => {
+    setNoteToExpand(note);
+    setExpandNote(true);
+  };
+
   return (
     <>
-      <Card className="break-inside-avoid">
+      <Card className="h-[350px]">
         <CardHeader>
           <CardTitle>{note.title}</CardTitle>
           <CardDescription>Deleted {deletedAt}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{note.content}</p>
+          <p>
+            {note.content && note.content.length > 150
+              ? `${note.content?.substring(0, 150)}...`
+              : note.content}
+          </p>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex items-end gap-2 h-full">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -102,6 +116,16 @@ export default function DeletedNote({ note }: { note: Note }) {
               <p>Permanently delete</p>
             </TooltipContent>
           </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={handleExpandNote} variant={"ghost"} size={"sm"}>
+                <ExpandIcon />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Expand</p>
+            </TooltipContent>
+          </Tooltip>
         </CardFooter>
       </Card>
 
@@ -111,6 +135,13 @@ export default function DeletedNote({ note }: { note: Note }) {
         isOpen={isOpenPermanentDeleteDialog}
         setIsOpen={setIsOpenPermanentDeleteDialog}
       />
+      {noteToExpand && (
+        <ExpandedNote
+          note={noteToExpand!}
+          isOpen={expandNote}
+          setOpen={setExpandNote}
+        />
+      )}
     </>
   );
 }

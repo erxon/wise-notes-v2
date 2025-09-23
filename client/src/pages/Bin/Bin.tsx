@@ -52,13 +52,15 @@ function DeletedNotes() {
 
   if (notes) {
     return (
-      <div className="columns-2 md:columns-3 lg:columns-4 gap-2">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
         {notes && notes.data && notes.data.length > 0 ? (
           notes.data.map((note: Note) => (
             <DeletedNote key={note._id} note={note} />
           ))
         ) : (
-          <div>You don't have notes in the bin</div>
+          <div className="text-neutral-500">
+            You don't have notes in the bin
+          </div>
         )}
       </div>
     );
@@ -92,7 +94,7 @@ function DeletedNotebooks() {
           <DeletedNotebook key={notebook._id} notebook={notebook} />
         ))
       ) : (
-        <div>You have no notebooks in bin</div>
+        <div className="text-neutral-500">You have no notebooks in bin</div>
       )}
     </div>
   );
