@@ -257,6 +257,24 @@ const reorderNotes = async (req, res) => {
   }
 };
 
+const searchNotes = async (req, res) => {
+  try {
+    const { query } = req.params;
+
+    const notes = await Note.find(
+      { $text: { $search: query } },
+      { score: { $meta: "textScore" } }
+    )
+      .limit(3)
+      .sort({ score: { $meta: "textScore" } });
+
+    res.status(200).json({ data: notes });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
 module.exports = {
   getNoteById,
   createNote,
@@ -269,4 +287,5 @@ module.exports = {
   moveNotesToNotebook,
   removeFromNotebook,
   reorderNotes,
+  searchNotes,
 };

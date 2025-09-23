@@ -6,7 +6,6 @@ import {
   Sparkle,
   SettingsIcon,
   TrashIcon,
-  SearchIcon,
 } from "lucide-react";
 
 import {
@@ -68,11 +67,6 @@ const data = {
       title: "Bin",
       icon: TrashIcon,
       url: "/bin",
-    },
-    {
-      title: "Search",
-      icon: SearchIcon,
-      url: "/search",
     },
   ],
 };
