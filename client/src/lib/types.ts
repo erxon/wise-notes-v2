@@ -39,4 +39,5 @@ export interface Chat {
   userId: string;
   query: string;
   answer: string;
+  savedAsNote?: boolean;
 }

@@ -84,7 +84,7 @@ const removeFromNotebook = async (req, res) => {
 
 const createNote = async (req, res) => {
   try {
-    const { title, content, type, items, notebookId } = req.body;
+    const { title, content, type, items, notebookId, sortKey } = req.body;
 
     const newNote = new Note({
       userId: req.user.id,
@@ -93,6 +93,7 @@ const createNote = async (req, res) => {
       type,
       items,
       notebookId: notebookId ? notebookId : null,
+      sortKey,
     });
 
     const note = await newNote.save();

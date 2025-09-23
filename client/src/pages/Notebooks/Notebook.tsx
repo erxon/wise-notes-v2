@@ -4,12 +4,10 @@ import type { Note, Notebook } from "@/lib/types";
 import NoteField from "@/components/notes/note-field";
 import { useEffect, useState } from "react";
 import CreateNote from "@/components/notes/create-note";
-import { DndProvider } from "react-dnd";
-import { HTML5toTouch } from "rdndmb-html5-to-touch";
-import { MultiBackend } from "react-dnd-multi-backend";
 import Notes from "@/components/notes/notes";
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Notebook() {
   const { id } = useParams();
@@ -68,15 +66,15 @@ function DisplayNotes({
     <>
       <div>
         {/* Create new note field */}
-        <NotebookNoteField
-          id={notebookId}
-          setOpenNewNoteDialog={setOpenNewNoteDialog}
-        />
+        <div className="mb-8">
+          <NotebookNoteField
+            id={notebookId}
+            setOpenNewNoteDialog={setOpenNewNoteDialog}
+          />
+        </div>
         {/* Display notes */}
         <section>
-          <DndProvider options={HTML5toTouch} backend={MultiBackend}>
-            <Notes notes={notesState} setNotes={setNotesState} />
-          </DndProvider>
+          <Notes notes={notesState} setNotes={setNotesState} />
         </section>
       </div>
       <CreateNote
@@ -108,7 +106,12 @@ function NotebookNoteField({
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col gap-1 items-center w-full">
+        <Skeleton className="w-[300px] h-[24px] mb-2" />
+        <Skeleton className="md:w-[400px] w-full h-[25px]" />
+      </div>
+    );
   }
 
   if (error) {

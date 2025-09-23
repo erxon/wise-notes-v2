@@ -18,20 +18,6 @@ export default function NoteField({
           placeholder="Note"
           className="md:w-[400px] w-full"
         />
-        {/* 
-        Add image or list
-
-        <div className="flex gap-1">
-          <Button variant={"ghost"} size={"sm"}>
-            <ImageIcon className="w-6 h-6" />
-            Image
-          </Button>
-          <Button variant={"ghost"} size={"sm"}>
-            <ListIcon className="w-6 h-6" />
-            List
-          </Button>
-        </div> 
-        */}
       </div>
     </>
   );

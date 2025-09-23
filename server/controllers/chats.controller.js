@@ -30,4 +30,15 @@ const deleteChat = async (req, res) => {
   }
 };
 
-module.exports = { getChat, getChatHistory, deleteChat };
+const updateChat = async (req, res) => {
+  try {
+    const chat = await Chat.findByIdAndUpdate(req.params.id, {
+      ...req.body,
+    });
+    res.status(200).json({ data: chat });
+  } catch (error) {
+    res.status(400).json({ message: "Something went wrong." });
+  }
+};
+
+module.exports = { getChat, getChatHistory, deleteChat, updateChat };

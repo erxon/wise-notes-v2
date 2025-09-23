@@ -6,6 +6,7 @@ import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileLayout from "../MobileLayout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Chat() {
   const { id } = useParams();
@@ -19,7 +20,35 @@ export default function Chat() {
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <PagesLayout page="Ask AI">
+        {isMobile ? (
+          <MobileLayout>
+            <div className="p-4">
+              <Skeleton className="h-[25px] w-[300px]" />
+            </div>
+            <div className="p-4 flex flex-col gap-2">
+              <Skeleton className="h-[25px] w-[100px]" />
+              <Skeleton className="h-[25px] w-full" />
+              <Skeleton className="h-[25px] w-full" />
+              <Skeleton className="h-[25px] w-[300px]" />
+            </div>
+          </MobileLayout>
+        ) : (
+          <Layout>
+            <div className="p-4">
+              <Skeleton className="h-[25px] w-[300px]" />
+            </div>
+            <div className="p-4 flex flex-col gap-2">
+              <Skeleton className="h-[25px] w-[100px]" />
+              <Skeleton className="h-[25px] w-full" />
+              <Skeleton className="h-[25px] w-full" />
+              <Skeleton className="h-[25px] w-[500px]" />
+            </div>
+          </Layout>
+        )}
+      </PagesLayout>
+    );
   }
 
   if (error) {
@@ -32,7 +61,7 @@ export default function Chat() {
         <MobileLayout>
           <div className="flex flex-col items-center h-[700px]">
             <div className="w-full p-4">
-              <Logs chat={data.data} />
+              <Logs key={data.data._id} chat={data.data} />
             </div>
             <div className="flex-grow" />
           </div>
@@ -41,7 +70,7 @@ export default function Chat() {
         <Layout>
           <div className="flex flex-col items-center h-[700px]">
             <div className="w-full p-4">
-              <Logs chat={data.data} />
+              <Logs key={data.data._id} chat={data.data} />
             </div>
             <div className="flex-grow" />
           </div>
