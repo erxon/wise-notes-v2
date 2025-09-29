@@ -12,12 +12,10 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Note } from "@/lib/types";
-// import { ImageIcon, ListChecks, Pencil, Plus, Text, Trash } from "lucide-react";
-// import TooltipWrapper from "./tooltip";
-// import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
+import { mutate } from "swr";
 
 function TextNote({
   note,
@@ -44,12 +42,10 @@ function TextNote({
 export default function CreateNote({
   open,
   setOpen,
-  setNotes,
   notebookId,
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
   notebookId?: string;
 }) {
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -89,10 +85,11 @@ export default function CreateNote({
           description: `New note added ${date}`,
         });
 
-        setNotes((prevNotes) => [
-          { ...response.data.data, sortKey: 0 },
-          ...prevNotes,
-        ]);
+        mutate(
+          `${import.meta.env.VITE_API_URL}/${
+            import.meta.env.VITE_API_VERSION
+          }/notes`
+        );
       }
     } catch (error) {
       if (error instanceof AxiosError) {

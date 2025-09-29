@@ -1,6 +1,6 @@
 import { ListItem, Note } from "@/lib/types";
 import { Checkbox } from "../ui/checkbox";
-import NoteCard from "./note";
+import NoteCard from "./note-card";
 
 function DisplayListItems({ items }: { items: ListItem[] }) {
   return (

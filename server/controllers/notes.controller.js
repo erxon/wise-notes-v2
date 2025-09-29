@@ -111,6 +111,7 @@ const getNotes = async (req, res) => {
     const notes = await Note.find({
       userId: req.user.id,
       deletedAt: null,
+      notebookId: null,
     }).sort({
       sortKey: "ascending",
     });

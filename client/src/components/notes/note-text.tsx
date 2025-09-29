@@ -1,5 +1,5 @@
 import { Note } from "@/lib/types";
-import NoteCard from "./note";
+import NoteCard from "./note-card";
 import { useState } from "react";
 
 export default function NoteText({
