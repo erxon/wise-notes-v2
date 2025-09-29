@@ -8,81 +8,37 @@ import Notes from "@/components/notes/notes";
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 import { Skeleton } from "@/components/ui/skeleton";
+import NotesLoading from "@/components/skeletons/notes-loading";
+import NotFound from "../NotFound";
 
-export default function Notebook() {
-  const { id } = useParams();
-
-  return (
-    <PagesLayout page={""}>
-      <FetchNotes id={id!} />
-    </PagesLayout>
-  );
-}
-
-function FetchNotes({ id }: { id: string }) {
-  const {
-    data: notes,
-    isLoading,
-    error,
-  } = useSWR(
-    `${import.meta.env.VITE_API_URL}/${
-      import.meta.env.VITE_API_VERSION
-    }/notebooks/${id}/notes`,
-    fetcher
-  );
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return (
-      <div>
-        <p>Something went wrong</p>
-      </div>
-    );
-  }
-
-  if (notes.data) {
-    return <DisplayNotes notes={notes.data} notebookId={id} />;
-  }
-}
-
-function DisplayNotes({
-  notes,
+function NotebookLayout({
+  children,
   notebookId,
 }: {
-  notes: Note[];
+  children: React.ReactNode;
   notebookId: string;
 }) {
-  const [notesState, setNotesState] = useState<Note[]>(notes);
   const [openNewNoteDialog, setOpenNewNoteDialog] = useState<boolean>(false);
-
-  useEffect(() => {
-    setNotesState(notes);
-  }, [notes]);
-
   return (
     <>
-      <div>
-        {/* Create new note field */}
-        <div className="mb-8">
-          <NotebookNoteField
-            id={notebookId}
-            setOpenNewNoteDialog={setOpenNewNoteDialog}
+      <PagesLayout>
+        <div>
+          {/* Create new note field */}
+          <div className="mb-8">
+            <NotebookNoteField
+              id={notebookId}
+              setOpenNewNoteDialog={setOpenNewNoteDialog}
+            />
+          </div>
+          {/* Display notes */}
+          {children}
+          <CreateNote
+            open={openNewNoteDialog}
+            setOpen={setOpenNewNoteDialog}
+            notebookId={notebookId}
           />
         </div>
-        {/* Display notes */}
-        <section>
-          <Notes notes={notesState} setNotes={setNotesState} />
-        </section>
-      </div>
-      <CreateNote
-        open={openNewNoteDialog}
-        setOpen={setOpenNewNoteDialog}
-        setNotes={setNotesState}
-        notebookId={notebookId}
-      />
+      </PagesLayout>
     </>
   );
 }
@@ -115,13 +71,49 @@ function NotebookNoteField({
   }
 
   if (error) {
-    return <div>Something went wrong</div>;
+    return <NotFound />;
   }
 
   return (
     <NoteField
       setOpenNewNoteDialog={setOpenNewNoteDialog}
-      title={notebook.data.title}
+      title={notebook.title}
     />
+  );
+}
+
+export default function Notebook() {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const { id } = useParams();
+
+  const { data, isLoading, error } = useSWR(
+    `${import.meta.env.VITE_API_URL}/${
+      import.meta.env.VITE_API_VERSION
+    }/notebooks/${id}/notes`,
+    fetcher
+  );
+
+  useEffect(() => {
+    if (data) {
+      setNotes(data);
+    }
+  }, [data]);
+
+  if (isLoading) {
+    return (
+      <NotebookLayout notebookId={id!}>
+        <NotesLoading />
+      </NotebookLayout>
+    );
+  }
+
+  if (error) {
+    return <NotFound />;
+  }
+
+  return (
+    <NotebookLayout notebookId={id!}>
+      <Notes notes={notes} setNotes={setNotes} />
+    </NotebookLayout>
   );
 }

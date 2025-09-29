@@ -1,6 +1,6 @@
 import type { Note } from "@/lib/types";
 import { Button } from "../ui/button";
-import { ExpandIcon, Pencil, Trash } from "lucide-react";
+import { EllipsisIcon, ExpandIcon, Pencil, Trash } from "lucide-react";
 import { timeLapsed } from "@/lib/utils";
 import { CornerUpRight } from "lucide-react";
 import TooltipWrapper from "../utility-components/TooltipWrapper";
@@ -12,8 +12,9 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
 import { GripVertical } from "lucide-react";
-import NotebookName from "./notebook-name";
+import NotebookName from "../notebooks/notebook-name";
 import ExpandedNote from "./dialogs/expanded-note";
+import NoteMenu from "./note-menu";
 
 export default function NoteCard({
   note,
@@ -57,8 +58,13 @@ export default function NoteCard({
           "flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300 bg-white dark:bg-neutral-900 h-[350px] md:[450px] lg:h-[300px]"
         )}
       >
-        <div {...listeners}>
-          <GripVertical className="w-4 h-4" />
+        <div className="flex">
+          <div {...listeners} className="w-fit">
+            <GripVertical className="w-4 h-4" />
+          </div>
+          <div className="ml-auto">
+            <NoteMenu />
+          </div>
         </div>
         <div className="flex flex-col gap-2 p-2 grow-1">
           <div>
