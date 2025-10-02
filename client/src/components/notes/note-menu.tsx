@@ -6,9 +6,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Note } from "@/lib/types";
 import { EllipsisIcon } from "lucide-react";
 
-export default function NoteMenu() {
+export default function NoteMenu({ note }: { note: Note }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -19,7 +20,9 @@ export default function NoteMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem>Delete</DropdownMenuItem>
         <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Remove from this note</DropdownMenuItem>
+        {note.notebookId && (
+          <DropdownMenuItem>Remove from this notebook</DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

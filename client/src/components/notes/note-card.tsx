@@ -1,6 +1,6 @@
 import type { Note } from "@/lib/types";
 import { Button } from "../ui/button";
-import { EllipsisIcon, ExpandIcon, Pencil, Trash } from "lucide-react";
+import { ExpandIcon, Pencil, Trash } from "lucide-react";
 import { timeLapsed } from "@/lib/utils";
 import { CornerUpRight } from "lucide-react";
 import TooltipWrapper from "../utility-components/TooltipWrapper";
@@ -63,7 +63,7 @@ export default function NoteCard({
             <GripVertical className="w-4 h-4" />
           </div>
           <div className="ml-auto">
-            <NoteMenu />
+            <NoteMenu note={note} />
           </div>
         </div>
         <div className="flex flex-col gap-2 p-2 grow-1">

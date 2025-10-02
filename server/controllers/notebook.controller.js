@@ -51,7 +51,7 @@ const getNotebookById = async (req, res, next) => {
 
 const getNotebook = async (req, res) => {
   try {
-    res.status(200).json({ data: req.notebook });
+    res.status(200).json(req.notebook);
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
@@ -174,9 +174,9 @@ const getNotesInNotebook = async (req, res) => {
       notebookId: notebookId,
       deletedAt: null,
     }).sort({
-      createdAt: "desc",
+      sortKey: "ascending",
     });
-    res.status(200).json({ data: notes });
+    res.status(200).json(notes);
   } catch (error) {
     res.status(400).json({ message: "Something went wrong." });
   }

@@ -61,6 +61,7 @@ const removeFromNotebook = async (req, res) => {
       },
       {
         notebookId: null,
+        sortKey: 0,
       }
     );
 
@@ -238,6 +239,8 @@ const updateNote = async (req, res) => {
 const reorderNotes = async (req, res) => {
   try {
     const { newNoteOrder } = req.body;
+
+    console.log(newNoteOrder);
 
     const newNoteOrderSortKeys = newNoteOrder.map((note, index) => ({
       id: note._id,
