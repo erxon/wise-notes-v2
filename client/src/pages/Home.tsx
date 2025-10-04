@@ -7,6 +7,30 @@ import NoteField from "@/components/notes/note-field";
 import NotesLoading from "@/components/skeletons/notes-loading";
 import fetcher from "@/lib/fetcher";
 import useSWR from "swr";
+import { Button } from "@/components/ui/button";
+import { Grid3x3Icon, Rows3Icon } from "lucide-react";
+import TooltipWrapper from "@/components/utility-components/TooltipWrapper";
+
+/* 
+[ ] Code function for the grid and rows view
+*/
+
+function ViewsOption() {
+  return (
+    <div className="px-6 flex gap-2">
+      <TooltipWrapper content="Grid view">
+        <Button size={"icon"} variant={"outline"}>
+          <Grid3x3Icon />
+        </Button>
+      </TooltipWrapper>
+      <TooltipWrapper content="List view">
+        <Button size={"icon"} variant={"outline"}>
+          <Rows3Icon />
+        </Button>
+      </TooltipWrapper>
+    </div>
+  );
+}
 
 function HomeLayout({ children }: { children: React.ReactNode }) {
   const [openNewNoteDialog, setOpenNewNoteDialog] = useState(false);
@@ -20,6 +44,7 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
             title="Hello, Ericson"
           />
         </div>
+        <ViewsOption />
         {children}
         <CreateNote open={openNewNoteDialog} setOpen={setOpenNewNoteDialog} />
       </div>

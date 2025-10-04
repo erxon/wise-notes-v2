@@ -3,6 +3,12 @@ import { Button } from "@/components/ui/button";
 import History from "./History/History";
 import { useNavigate, useParams } from "react-router";
 
+/*
+
+[ ] Change layout
+
+*/
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { id } = useParams();
   const navigate = useNavigate();

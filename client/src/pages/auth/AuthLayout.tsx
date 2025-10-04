@@ -1,3 +1,4 @@
+import { ModeToggle } from "@/components/mode-toggle";
 import { Toaster } from "@/components/ui/sonner";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
@@ -37,9 +38,10 @@ export default function AuthLayout({
 
   return (
     <>
-      <div className="h-screen flex items-center justify-center bg-neutral-50">
-        <div className="p-4 bg-white rounded-lg shadow-lg m-4 md:m-0">
+      <div className="h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900">
+        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-lg m-4 md:m-0">
           {children}
+          <ModeToggle />
         </div>
       </div>
       <Toaster />
