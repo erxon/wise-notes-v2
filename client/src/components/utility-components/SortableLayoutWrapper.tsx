@@ -15,7 +15,6 @@ import {
 } from "@dnd-kit/sortable";
 import { Note } from "@/lib/types";
 import axios from "axios";
-import { mutate } from "swr";
 
 export default function SortableLayoutWrapper({
   children,
@@ -63,16 +62,10 @@ export default function SortableLayoutWrapper({
       });
 
       setNotes(newNoteOrder);
-
       reorderNotes(newNoteOrder);
-
-      mutate(
-        `${import.meta.env.VITE_API_URL}/${
-          import.meta.env.VITE_API_VERSION
-        }/notes`
-      );
     }
   }
+
   async function reorderNotes(newOrder: Note[]) {
     await axios.put(
       `${import.meta.env.VITE_API_URL}/${
