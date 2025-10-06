@@ -12,10 +12,10 @@ const getChat = async (req, res) => {
 const getChatHistory = async (req, res) => {
   try {
     const chats = await Chat.find({ userId: req.user.id }).sort({
-      createdAt: "desc",
+      createdAt: "ascending",
     });
 
-    res.status(200).json({ data: chats });
+    res.status(200).json(chats);
   } catch (error) {
     res.status(400).json({ message: "Something went wrong" });
   }

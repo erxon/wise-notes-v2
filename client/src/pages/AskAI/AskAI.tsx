@@ -8,6 +8,7 @@ import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileLayout from "./MobileLayout";
+import QueryPanel from "@/components/ask-ai/query-panel";
 
 export default function AskAI() {
   const isMobile = useIsMobile();
@@ -20,7 +21,8 @@ export default function AskAI() {
         </MobileLayout>
       ) : (
         <Layout>
-          <MainField />
+          {/* <MainField /> */}
+          <QueryPanel />
         </Layout>
       )}
     </PagesLayout>

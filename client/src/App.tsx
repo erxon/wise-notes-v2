@@ -5,7 +5,6 @@ import Profile from "./pages/Profile/Profile";
 import Email from "./pages/Profile/Email";
 import Password from "./pages/Profile/Password";
 import AskAI from "./pages/AskAI/AskAI";
-import Chat from "./pages/AskAI/Chat/Chat";
 import Notebook from "./pages/Notebooks/Notebook";
 import Signin from "./pages/auth/Signin";
 import Signup from "./pages/auth/Signup";
@@ -40,7 +39,7 @@ const router = createBrowserRouter([
     path: "/ask-ai",
     children: [
       { index: true, Component: AskAI },
-      { path: ":id", Component: Chat },
+      { path: ":id", Component: AskAI },
     ],
   },
   {

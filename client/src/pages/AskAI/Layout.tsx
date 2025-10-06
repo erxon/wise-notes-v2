@@ -1,7 +1,6 @@
-import { MessageCircleQuestion, PlusIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MessageCircleQuestion } from "lucide-react";
 import History from "./History/History";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 
 /*
 
@@ -11,7 +10,6 @@ import { useNavigate, useParams } from "react-router";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { id } = useParams();
-  const navigate = useNavigate();
 
   return (
     <div className="grid lg:grid-cols-12">
@@ -21,14 +19,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <p>Ask AI about your notes</p>
         </div>
         <div>
-          <Button
-            onClick={() => navigate("/ask-ai")}
-            variant={"outline"}
-            className="mb-2"
-          >
-            <span>New query</span>
-            <PlusIcon />
-          </Button>
           <History currentChat={id} />
         </div>
       </div>{" "}
