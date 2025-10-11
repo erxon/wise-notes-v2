@@ -1,5 +1,5 @@
 import PagesLayout from "./PagesLayout";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CreateNote from "@/components/notes/create-note";
 import type { Note } from "@/lib/types";
 import Notes from "@/components/notes/notes";
@@ -8,11 +8,8 @@ import NotesLoading from "@/components/skeletons/notes-loading";
 import { Button } from "@/components/ui/button";
 import { Grid3x3Icon, Rows3Icon } from "lucide-react";
 import TooltipWrapper from "@/components/utility-components/TooltipWrapper";
-import axios from "axios";
-
-/* 
-[ ] Code function for the grid and rows view
-*/
+import useSWR from "swr";
+import fetcher from "@/lib/fetcher";
 
 function ViewsOption() {
   return (
@@ -52,31 +49,18 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
 }
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
   const [notes, setNotes] = useState<Note[]>([]);
 
-  const fetchNotes = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/${
-          import.meta.env.VITE_API_VERSION
-        }/notes`,
-        { withCredentials: true }
-      );
-
-      setNotes(data.data);
-    } catch {
-      setError("Something went wrong");
-    }
-
-    setIsLoading(false);
-  }, []);
+  const { data, isLoading, error } = useSWR(
+    `${import.meta.env.VITE_API_URL}/${import.meta.env.VITE_API_VERSION}/notes`,
+    fetcher
+  );
 
   useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
+    if (data) {
+      setNotes(data.data);
+    }
+  }, [data]);
 
   if (isLoading) {
     return (

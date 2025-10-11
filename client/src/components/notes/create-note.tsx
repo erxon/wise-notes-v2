@@ -72,7 +72,6 @@ export default function CreateNote({
           title: note.title,
           content: note.content,
           notebookId: notebookId ? notebookId : null,
-          sortKey: 0,
         },
         {
           withCredentials: true,

@@ -15,6 +15,8 @@ import {
 } from "@dnd-kit/sortable";
 import { Note } from "@/lib/types";
 import axios from "axios";
+import { mutate } from "swr";
+import { useParams } from "react-router";
 
 export default function SortableLayoutWrapper({
   children,
@@ -25,6 +27,8 @@ export default function SortableLayoutWrapper({
   notes: Note[];
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
+  const { id } = useParams();
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -62,11 +66,12 @@ export default function SortableLayoutWrapper({
       });
 
       setNotes(newNoteOrder);
-      reorderNotes(newNoteOrder);
+
+      reorderNotes(newNoteOrder, id);
     }
   }
 
-  async function reorderNotes(newOrder: Note[]) {
+  async function reorderNotes(newOrder: Note[], notebookId?: string) {
     await axios.put(
       `${import.meta.env.VITE_API_URL}/${
         import.meta.env.VITE_API_VERSION
@@ -76,5 +81,18 @@ export default function SortableLayoutWrapper({
         withCredentials: true,
       }
     );
+    if (notebookId) {
+      mutate(
+        `${import.meta.env.VITE_API_URL}/${
+          import.meta.env.VITE_API_VERSION
+        }/notebooks/${notebookId}/notes`
+      );
+    } else {
+      mutate(
+        `${import.meta.env.VITE_API_URL}/${
+          import.meta.env.VITE_API_VERSION
+        }/notes`
+      );
+    }
   }
 }

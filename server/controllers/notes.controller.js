@@ -83,9 +83,24 @@ const removeFromNotebook = async (req, res) => {
   }
 };
 
+const reorder = async (notes) => {
+  notes.map(
+    async (note, index) =>
+      await note.updateOne({ _id: note._id }, { sortKey: index })
+  );
+};
+
 const createNote = async (req, res) => {
   try {
-    const { title, content, type, items, notebookId, sortKey } = req.body;
+    const { title, content, type, items, notebookId } = req.body;
+
+    const [previousNote] = await Note.find({
+      userId: req.user.id,
+      deletedAt: null,
+      notebookId: notebookId,
+    })
+      .sort({ sortKey: "ascending" })
+      .limit(1);
 
     const newNote = new Note({
       userId: req.user.id,
@@ -94,7 +109,7 @@ const createNote = async (req, res) => {
       type,
       items,
       notebookId: notebookId ? notebookId : null,
-      sortKey,
+      sortKey: previousNote.sortKey - 1,
     });
 
     const note = await newNote.save();
@@ -239,8 +254,6 @@ const updateNote = async (req, res) => {
 const reorderNotes = async (req, res) => {
   try {
     const { newNoteOrder } = req.body;
-
-    console.log(newNoteOrder);
 
     const newNoteOrderSortKeys = newNoteOrder.map((note, index) => ({
       id: note._id,

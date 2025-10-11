@@ -2,7 +2,7 @@ import PagesLayout from "../PagesLayout";
 import { useParams } from "react-router";
 import type { Note, Notebook } from "@/lib/types";
 import NoteField from "@/components/notes/note-field";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CreateNote from "@/components/notes/create-note";
 import Notes from "@/components/notes/notes";
 import useSWR from "swr";
@@ -10,7 +10,6 @@ import fetcher from "@/lib/fetcher";
 import { Skeleton } from "@/components/ui/skeleton";
 import NotesLoading from "@/components/skeletons/notes-loading";
 import NotFound from "../NotFound";
-import axios from "axios";
 
 function NotebookLayout({
   children,
@@ -84,33 +83,21 @@ function NotebookNoteField({
 }
 
 export default function Notebook() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
   const [notes, setNotes] = useState<Note[]>([]);
   const { id } = useParams();
 
-  const fetchNotesInNotebook = useCallback(async () => {
-    setIsLoading(true);
-
-    try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/${
-          import.meta.env.VITE_API_VERSION
-        }/notebooks/${id}/notes`,
-        { withCredentials: true }
-      );
-
-      setNotes(data);
-    } catch {
-      setError("Something went wrong");
-    }
-
-    setIsLoading(false);
-  }, [id]);
+  const { data, isLoading, error } = useSWR(
+    `${import.meta.env.VITE_API_URL}/${
+      import.meta.env.VITE_API_VERSION
+    }/notebooks/${id}/notes`,
+    fetcher
+  );
 
   useEffect(() => {
-    fetchNotesInNotebook();
-  }, [fetchNotesInNotebook]);
+    if (data) {
+      setNotes(data);
+    }
+  }, [data]);
 
   if (isLoading) {
     return (
