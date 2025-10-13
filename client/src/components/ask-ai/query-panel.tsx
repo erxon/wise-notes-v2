@@ -2,7 +2,6 @@ import fetcher from "@/lib/fetcher";
 import useSWR from "swr";
 import { useEffect, useRef, useState } from "react";
 import { Chat } from "@/lib/types";
-import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
 import { QueryPanelLoader } from "../loaders";
 import { useParams } from "react-router";
@@ -19,7 +18,7 @@ function DisplayLogs({
   avatar: string;
   query: string;
 }) {
-  function scrollToChat(id?: string) {
+  const scrollToChat = (id?: string) => {
     if (id) {
       const element = document.getElementById(id);
 
@@ -27,10 +26,23 @@ function DisplayLogs({
         element.scrollIntoView({ behavior: "smooth" });
       }
     }
-  }
+  };
+
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+    requestAnimationFrame(() => {
+      const viewport = scrollAreaRef.current?.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      );
+      if (viewport) {
+        viewport.scrollTo({ top: viewport.scrollHeight, behavior });
+      }
+    });
+  };
 
   const { id } = useParams();
-  // const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
+  const isInitialRender = useRef(true);
 
   const { data, isLoading, error } = useSWR(
     `${import.meta.env.VITE_API_URL}/${import.meta.env.VITE_API_VERSION}/chats`,
@@ -38,22 +50,37 @@ function DisplayLogs({
   );
 
   useEffect(() => {
-    const endElement = document.getElementById("end");
+    if (!data) return;
 
-    if (endElement) {
-      endElement.scrollIntoView({ behavior: "smooth" });
+    if (isInitialRender.current) {
+      if (id) {
+        const timeout = setTimeout(() => scrollToChat(id), 50);
+
+        return () => clearTimeout(timeout);
+      } else {
+        scrollToBottom("auto");
+      }
+
+      isInitialRender.current = false;
+    } else {
+      const timeout = setTimeout(() => {
+        scrollToBottom("smooth");
+      }, 50);
+      return () => clearTimeout(timeout);
     }
+  }, [data, id]);
 
-    if (data) {
-      scrollToChat(id);
-    }
+  useEffect(() => {
+    if (data && id) scrollToChat(id);
+  }, [data, id]);
 
-    if (thinking) scrollToChat(undefined);
-  }, [data, id, thinking]);
+  useEffect(() => {
+    if (data && thinking) scrollToBottom("smooth");
+  }, [data, thinking]);
 
   if (isLoading)
     return (
-      <div className="h-[700px]">
+      <div className="h-[calc(100vh-100px)]">
         <QueryPanelLoader />
       </div>
     );
@@ -62,17 +89,14 @@ function DisplayLogs({
 
   return (
     <>
-      <ScrollArea className="h-[700px]">
-        <div>
-          <div className="flex flex-col gap-10">
-            {data.map((chat: Chat) => (
-              <div key={chat._id} id={chat._id}>
-                <Log key={chat._id} chat={chat} avatar={avatar} />
-              </div>
-            ))}
-            {thinking && <Thinking query={query} />}
-            <div id="end" />
-          </div>
+      <ScrollArea ref={scrollAreaRef} className="h-full">
+        <div className="flex flex-col gap-10">
+          {data.map((chat: Chat) => (
+            <div key={chat._id} id={chat._id}>
+              <Log key={chat._id} chat={chat} avatar={avatar} />
+            </div>
+          ))}
+          {thinking && <Thinking query={query} />}
         </div>
       </ScrollArea>
     </>
@@ -85,17 +109,18 @@ export default function QueryPanel() {
   const [query, setQuery] = useState<string>("");
 
   return (
-    <div className="px-12">
-      <div className="mb-16">
-        <h1 className="text-2xl font-semibold">Queries</h1>
-        <Separator className="my-4" />
+    <div className="px-12 flex flex-col h-[calc(100vh-100px)]">
+      <header className="p-4 border-b font-semibold text-xl">Queries</header>
+      <div className="flex-1 overflow-hidden">
         <DisplayLogs avatar={avatar} thinking={thinking} query={query} />
       </div>
-      <QueryField
-        setThinking={setThinking}
-        setAvatar={setAvatar}
-        setQuery={setQuery}
-      />
+      <footer className="p-4 shadow-lg rounded-lg">
+        <QueryField
+          setThinking={setThinking}
+          setAvatar={setAvatar}
+          setQuery={setQuery}
+        />
+      </footer>
     </div>
   );
 }

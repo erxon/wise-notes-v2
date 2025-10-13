@@ -23,7 +23,7 @@ export default function History({ currentChat }: { currentChat?: string }) {
   }
 
   return (
-    <ScrollArea className="max-h-screen">
+    <ScrollArea className="h-[calc(100vh-150px)]">
       {chats && chats.length > 0 ? (
         chats.map((chat: Chat) => (
           <HistoryItem key={chat._id} chat={chat} currentChat={currentChat} />
