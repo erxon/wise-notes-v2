@@ -55,7 +55,7 @@ export default function NoteCard({
         {...attributes}
         className={clsx(
           isDragging ? "z-10 relative" : "z-0",
-          "flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300 bg-white dark:bg-neutral-900 h-[350px] md:[450px] lg:h-[300px]"
+          "flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300 bg-white dark:bg-neutral-900 h-[350px] md:[450px] lg:h-[400px]"
         )}
       >
         <div className="flex">

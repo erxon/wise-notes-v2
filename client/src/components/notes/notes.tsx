@@ -26,7 +26,7 @@ export default function Notes({
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   return (
-    <div className="md:mx-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+    <div className="md:mx-6 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2">
       <SortableLayoutWrapper notes={notes} setNotes={setNotes}>
         {notes.map((note) => {
           if (!note.deletedAt) {

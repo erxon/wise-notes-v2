@@ -4,7 +4,7 @@ const isAuthorized = async (req, res, next) => {
   try {
     const chat = await Chat.findById(req.params.id);
 
-    if (chat.userId !== req.user.id) {
+    if (chat.userId.toString() !== req.user.id) {
       return res.status(401).json({ message: "Not authorized" });
     }
     next();

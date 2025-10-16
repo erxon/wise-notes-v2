@@ -2,16 +2,19 @@ const Notebook = require("../models/notebooks.model");
 const Note = require("../models/notes.model");
 const Chunk = require("../models/chunks.model");
 const logger = require("../utilities/logger.util");
-
-const isAuthorized = async (req, res) => {
+const { ObjectId } = require("mongodb");
+const isAuthorized = async (req, res, next) => {
   try {
     const notebook = await Notebook.findById(req.params.id);
+    const authorized = notebook.userId.toString() === req.user.id;
 
-    if (notebook.userId !== req.user.id) {
-      return res.status(401).json({ message: "Not authorized" });
+    if (!authorized) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
+
     next();
   } catch (error) {
+    logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
   }
 };
@@ -184,6 +187,7 @@ const getNotesInNotebook = async (req, res) => {
 
   try {
     const notes = await Note.find({
+      userId: req.user.id,
       notebookId: notebookId,
       deletedAt: null,
     }).sort({
