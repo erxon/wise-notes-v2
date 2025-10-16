@@ -1,5 +1,18 @@
 const Chat = require("../models/chats.model");
 
+const isAuthorized = async (req, res, next) => {
+  try {
+    const chat = await Chat.findById(req.params.id);
+
+    if (chat.userId !== req.user.id) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+    next();
+  } catch (error) {
+    res.status(400).json({ message: "Something went wrong." });
+  }
+};
+
 const getChat = async (req, res) => {
   try {
     const chat = await Chat.findById(req.params.id);
@@ -11,9 +24,14 @@ const getChat = async (req, res) => {
 
 const getChatHistory = async (req, res) => {
   try {
-    const chats = await Chat.find({ userId: req.user.id }).sort({
-      createdAt: "ascending",
-    });
+    const { page } = req.query;
+    const limit = page ? page * 3 : null;
+
+    const chats = await Chat.find({ userId: req.user.id })
+      .sort({
+        createdAt: "descending",
+      })
+      .limit(limit);
 
     res.status(200).json(chats);
   } catch (error) {
@@ -41,4 +59,10 @@ const updateChat = async (req, res) => {
   }
 };
 
-module.exports = { getChat, getChatHistory, deleteChat, updateChat };
+module.exports = {
+  getChat,
+  getChatHistory,
+  deleteChat,
+  updateChat,
+  isAuthorized,
+};

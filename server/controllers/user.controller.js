@@ -55,7 +55,13 @@ const createUser = async (req, res) => {
 };
 
 const getUser = (req, res) => {
-  res.status(200).json(req.user);
+  res.status(200).json({
+    id: req.user.id,
+    email: req.user.email,
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+    profilePicture: req.user.profilePicture,
+  });
 };
 
 const updateUserBasicInfo = async (req, res) => {

@@ -13,6 +13,7 @@ const {
   removeFromNotebook,
   reorderNotes,
   searchNotes,
+  isAuthorized,
 } = require("../controllers/notes.controller");
 const {
   addItemToListNote,
@@ -31,7 +32,7 @@ router
 
 router.route("/delete").delete(isAuthenticated, permanentDelete);
 
-router.route("/restore/:id").put(isAuthenticated, restoreNote);
+router.route("/restore/:id").put(isAuthenticated, isAuthorized, restoreNote);
 
 router.put("/organize", isAuthenticated, moveNotesToNotebook);
 
@@ -41,8 +42,8 @@ router.route("/search/:query").get(isAuthenticated, searchNotes);
 
 router
   .route("/:id")
-  .delete(isAuthenticated, getNoteById, deleteOneNote)
-  .put(isAuthenticated, getNoteById, updateNote);
+  .delete(isAuthenticated, isAuthorized, getNoteById, deleteOneNote)
+  .put(isAuthenticated, isAuthorized, getNoteById, updateNote);
 
 router
   .route("/list/:id")

@@ -3,6 +3,19 @@ const Note = require("../models/notes.model");
 const Chunk = require("../models/chunks.model");
 const logger = require("../utilities/logger.util");
 
+const isAuthorized = async (req, res) => {
+  try {
+    const notebook = await Notebook.findById(req.params.id);
+
+    if (notebook.userId !== req.user.id) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+    next();
+  } catch (error) {
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
 const createNotebook = async (req, res) => {
   try {
     const { title } = req.body;
@@ -192,4 +205,5 @@ module.exports = {
   permanentDeleteNotebook,
   restoreNotebook,
   getNotesInNotebook,
+  isAuthorized,
 };

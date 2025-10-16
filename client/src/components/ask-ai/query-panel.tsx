@@ -43,14 +43,19 @@ function DisplayLogs({
 
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const isInitialRender = useRef(true);
+  const [reversedChats, setReversedChats] = useState<Chat[] | null>(null);
 
   const { data, isLoading, error } = useSWR(
-    `${import.meta.env.VITE_API_URL}/${import.meta.env.VITE_API_VERSION}/chats`,
+    `${import.meta.env.VITE_API_URL}/${
+      import.meta.env.VITE_API_VERSION
+    }/chats?page=1`,
     fetcher
   );
 
   useEffect(() => {
     if (!data) return;
+
+    setReversedChats(data.reverse());
 
     if (isInitialRender.current) {
       if (id) {
@@ -91,7 +96,7 @@ function DisplayLogs({
     <>
       <ScrollArea ref={scrollAreaRef} className="h-full">
         <div className="flex flex-col gap-10">
-          {data.map((chat: Chat) => (
+          {reversedChats?.map((chat: Chat) => (
             <div key={chat._id} id={chat._id}>
               <Log key={chat._id} chat={chat} avatar={avatar} />
             </div>

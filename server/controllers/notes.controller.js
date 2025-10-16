@@ -5,9 +5,23 @@ const Chunk = require("../models/chunks.model");
 const Notebook = require("../models/notebooks.model");
 const _ = require("lodash");
 
+const isAuthorized = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const note = await Note.findById(id);
+    if (note.userId.toString() !== req.user.id) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Not authorized" });
+  }
+};
+
 const getNoteById = async (req, res, next) => {
   try {
     const note = await Note.findById(req.params.id);
+
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
     }
@@ -81,13 +95,6 @@ const removeFromNotebook = async (req, res) => {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
   }
-};
-
-const reorder = async (notes) => {
-  notes.map(
-    async (note, index) =>
-      await note.updateOne({ _id: note._id }, { sortKey: index })
-  );
 };
 
 const createNote = async (req, res) => {
@@ -186,7 +193,7 @@ const permanentDelete = async (req, res) => {
   try {
     const toDelete = req.body.toDelete;
 
-    await Note.deleteMany({ _id: { $in: toDelete } });
+    await Note.deleteMany({ _id: { $in: toDelete }, userId: req.user.id });
 
     await Chunk.deleteMany({ noteId: { $in: toDelete } });
 
@@ -305,4 +312,5 @@ module.exports = {
   removeFromNotebook,
   reorderNotes,
   searchNotes,
+  isAuthorized,
 };
