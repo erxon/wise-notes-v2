@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Chat } from "@/lib/types";
 import { ScrollArea } from "../ui/scroll-area";
 import { QueryPanelLoader } from "../loaders";
@@ -7,7 +7,6 @@ import Thinking from "./query-panel/thinking";
 import QueryField from "./query-panel/queryField";
 import Log from "./query-panel/log";
 import { Spinner } from "../ui/spinner";
-import axios from "axios";
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
