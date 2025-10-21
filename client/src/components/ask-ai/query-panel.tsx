@@ -1,6 +1,4 @@
-import fetcher from "@/lib/fetcher";
-import useSWR from "swr";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Chat } from "@/lib/types";
 import { ScrollArea } from "../ui/scroll-area";
 import { QueryPanelLoader } from "../loaders";
@@ -8,6 +6,10 @@ import { useParams } from "react-router";
 import Thinking from "./query-panel/thinking";
 import QueryField from "./query-panel/queryField";
 import Log from "./query-panel/log";
+import { Spinner } from "../ui/spinner";
+import axios from "axios";
+import useSWR from "swr";
+import fetcher from "@/lib/fetcher";
 
 function DisplayLogs({
   thinking,
@@ -18,9 +20,17 @@ function DisplayLogs({
   avatar: string;
   query: string;
 }) {
+  const { id } = useParams();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const isInitialRender = useRef(true);
+
   const scrollToChat = (id?: string) => {
     if (id) {
       const element = document.getElementById(id);
+
+      if (!element) {
+        return;
+      }
 
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
@@ -33,53 +43,43 @@ function DisplayLogs({
       const viewport = scrollAreaRef.current?.querySelector(
         "[data-radix-scroll-area-viewport]"
       );
+
       if (viewport) {
         viewport.scrollTo({ top: viewport.scrollHeight, behavior });
       }
     });
   };
 
-  const { id } = useParams();
-
-  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
-  const isInitialRender = useRef(true);
-  const [reversedChats, setReversedChats] = useState<Chat[] | null>(null);
-
   const { data, isLoading, error } = useSWR(
-    `${import.meta.env.VITE_API_URL}/${
-      import.meta.env.VITE_API_VERSION
-    }/chats?page=1`,
+    `${import.meta.env.VITE_API_URL}/${import.meta.env.VITE_API_VERSION}/chats`,
     fetcher
   );
 
   useEffect(() => {
-    if (!data) return;
-
-    setReversedChats(data.reverse());
-
-    if (isInitialRender.current) {
+    if (isInitialRender.current && scrollAreaRef.current) {
       if (id) {
         const timeout = setTimeout(() => scrollToChat(id), 50);
-
         return () => clearTimeout(timeout);
       } else {
         scrollToBottom("auto");
       }
 
       isInitialRender.current = false;
-    } else {
-      const timeout = setTimeout(() => {
-        scrollToBottom("smooth");
-      }, 50);
-      return () => clearTimeout(timeout);
+    }
+  }, [data, id, scrollAreaRef]);
+
+  useEffect(() => {
+    if (!data) return;
+    if (data && id) {
+      scrollToChat(id);
     }
   }, [data, id]);
 
   useEffect(() => {
-    if (data && id) scrollToChat(id);
-  }, [data, id]);
-
-  useEffect(() => {
+    if (!data) return;
+    if (data) {
+      scrollToBottom("smooth");
+    }
     if (data && thinking) scrollToBottom("smooth");
   }, [data, thinking]);
 
@@ -90,13 +90,16 @@ function DisplayLogs({
       </div>
     );
 
-  if (error) return <div>Something went wrong</div>;
+  if (error) {
+    return <div>Something went wrong</div>;
+  }
 
   return (
     <>
       <ScrollArea ref={scrollAreaRef} className="h-full">
+        {isLoading && <Spinner />}
         <div className="flex flex-col gap-10">
-          {reversedChats?.map((chat: Chat) => (
+          {data?.map((chat: Chat) => (
             <div key={chat._id} id={chat._id}>
               <Log key={chat._id} chat={chat} avatar={avatar} />
             </div>

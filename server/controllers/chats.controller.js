@@ -25,15 +25,15 @@ const getChat = async (req, res) => {
 const getChatHistory = async (req, res) => {
   try {
     const { page } = req.query;
-    const limit = page ? page * 3 : null;
 
     const chats = await Chat.find({ userId: req.user.id })
       .sort({
         createdAt: "descending",
       })
-      .limit(limit);
+      .limit(page * 3);
 
-    res.status(200).json(chats);
+    const reverse = chats.reverse();
+    res.status(200).json(reverse);
   } catch (error) {
     res.status(400).json({ message: "Something went wrong" });
   }

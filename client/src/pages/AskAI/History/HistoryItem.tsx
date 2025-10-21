@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Chat } from "@/lib/types";
 import axios, { AxiosError } from "axios";
+import clsx from "clsx";
 import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { mutate } from "swr";
 
@@ -14,6 +15,7 @@ export default function HistoryItem({
   chat: Chat;
   currentChat?: string;
 }) {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [mouseOver, setMouseOver] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -69,7 +71,10 @@ export default function HistoryItem({
     >
       <Link
         to={`/ask-ai/${chat._id}`}
-        className="p-2 hover:bg-secondary rounded-lg mb-1 grow"
+        className={clsx(
+          "p-2 hover:bg-secondary rounded-lg mb-1 grow",
+          id === chat._id && "bg-secondary"
+        )}
       >
         <p className="grow">{chat.query}</p>
       </Link>
