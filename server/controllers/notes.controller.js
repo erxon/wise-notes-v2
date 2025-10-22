@@ -131,14 +131,28 @@ const createNote = async (req, res) => {
 
 const getNotes = async (req, res) => {
   try {
-    const notes = await Note.find({
+    const { page } = req.query;
+
+    const parsedPage = Number(page);
+    const limit = parsedPage * 8;
+
+    const totalNotes = await Note.find({
       userId: req.user.id,
       deletedAt: null,
       notebookId: null,
-    }).sort({
-      sortKey: "ascending",
-    });
-    res.status(200).json({ data: notes });
+    }).countDocuments();
+
+    if (parsedPage > 0) {
+      const notes = await Note.find({
+        userId: req.user.id,
+        deletedAt: null,
+        notebookId: null,
+      })
+        .sort({ sortKey: "ascending" })
+        .limit(limit);
+
+      return res.status(200).json(notes);
+    }
   } catch (error) {
     logger.error(error);
     res.status(400).json({ message: "Something went wrong" });

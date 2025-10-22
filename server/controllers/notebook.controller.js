@@ -184,16 +184,57 @@ const permanentDeleteNotebook = async (req, res) => {
 
 const getNotesInNotebook = async (req, res) => {
   const notebookId = req.params.id;
+  const { page } = req.query;
+
+  const parsedPage = Number(page);
 
   try {
-    const notes = await Note.find({
+    const limit = parsedPage * 8;
+    const skip = limit - 8;
+
+    const allNotes = await Note.find({
       userId: req.user.id,
       notebookId: notebookId,
       deletedAt: null,
-    }).sort({
-      sortKey: "ascending",
-    });
-    res.status(200).json(notes);
+    }).sort({ sortKey: "ascending" });
+
+    if (parsedPage === 1 && allNotes.length <= 8) {
+      return res.status(200).json(allNotes);
+    }
+
+    if (parsedPage > 0 && allNotes.length > 8 && limit < allNotes.length) {
+      const notes = await Note.find({
+        userId: req.user.id,
+        notebookId: notebookId,
+        deletedAt: null,
+      })
+        .sort({
+          sortKey: "ascending",
+        })
+        .limit(limit)
+        .skip(skip);
+
+      return res.status(200).json(notes);
+    } else {
+      const previousPage = parsedPage - 1;
+      const remaining = allNotes.length - previousPage * 8;
+
+      if (remaining > 0) {
+        const notes = await Note.find({
+          userId: req.user.id,
+          notebookId: notebookId,
+          deletedAt: null,
+        })
+          .sort({
+            sortKey: "ascending",
+          })
+          .limit(remaining)
+          .skip(previousPage * 8);
+
+        return res.status(200).json(notes);
+      }
+      return res.status(200).json([]);
+    }
   } catch (error) {
     res.status(400).json({ message: "Something went wrong." });
   }

@@ -43,10 +43,12 @@ export default function CreateNote({
   open,
   setOpen,
   notebookId,
+  setNotes,
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   notebookId?: string;
+  setNotes?: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   const [isAdding, setIsAdding] = useState<boolean>(false);
 
@@ -83,6 +85,9 @@ export default function CreateNote({
         toast.success(response.data.message, {
           description: `New note added ${date}`,
         });
+        if (setNotes) {
+          setNotes((prev: Note[]) => [response.data.data, ...prev]);
+        }
 
         mutate(
           `${import.meta.env.VITE_API_URL}/${

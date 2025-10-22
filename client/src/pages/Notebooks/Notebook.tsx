@@ -10,13 +10,16 @@ import fetcher from "@/lib/fetcher";
 import { Skeleton } from "@/components/ui/skeleton";
 import NotesLoading from "@/components/skeletons/notes-loading";
 import NotFound from "../NotFound";
+import useSWRInfinite from "swr/infinite";
 
 function NotebookLayout({
   children,
   notebookId,
+  setNotes,
 }: {
   children: React.ReactNode;
   notebookId: string;
+  setNotes?: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   const [openNewNoteDialog, setOpenNewNoteDialog] = useState<boolean>(false);
   return (
@@ -33,6 +36,7 @@ function NotebookLayout({
           {/* Display notes */}
           {children}
           <CreateNote
+            setNotes={setNotes}
             open={openNewNoteDialog}
             setOpen={setOpenNewNoteDialog}
             notebookId={notebookId}
@@ -84,22 +88,36 @@ function NotebookNoteField({
 
 export default function Notebook() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [hasMore, setHasMore] = useState(true);
   const { id } = useParams();
 
-  const { data, isLoading, error } = useSWR(
-    `${import.meta.env.VITE_API_URL}/${
+  const getKey = (pageIndex: number, prev: Note[]) => {
+    if (prev && !prev.length) return null;
+    return `${import.meta.env.VITE_API_URL}/${
       import.meta.env.VITE_API_VERSION
-    }/notebooks/${id}/notes`,
+    }/notebooks/${id}/notes?page=${pageIndex + 1}`;
+  };
+
+  // const { data, isLoading, error } = useSWR(
+  //   `${import.meta.env.VITE_API_URL}/${
+  //     import.meta.env.VITE_API_VERSION
+  //   }/notebooks/${id}/notes`,
+  //   fetcher
+  // );
+
+  const { data, isValidating, error, setSize } = useSWRInfinite(
+    getKey,
     fetcher
   );
 
   useEffect(() => {
     if (data) {
-      setNotes(data);
+      setHasMore(data[data.length - 1].length > 0);
+      setNotes(data.flat());
     }
   }, [data]);
 
-  if (isLoading) {
+  if (!data) {
     return (
       <NotebookLayout notebookId={id!}>
         <NotesLoading />
@@ -112,8 +130,16 @@ export default function Notebook() {
   }
 
   return (
-    <NotebookLayout notebookId={id!}>
-      <Notes notes={notes} setNotes={setNotes} />
+    <NotebookLayout setNotes={setNotes} notebookId={id!}>
+      {notes.length > 0 && (
+        <Notes
+          hasMore={hasMore}
+          setPage={setSize}
+          isValidating={isValidating}
+          notes={notes}
+          setNotes={setNotes}
+        />
+      )}
     </NotebookLayout>
   );
 }

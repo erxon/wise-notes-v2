@@ -1,5 +1,5 @@
 import PagesLayout from "./PagesLayout";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CreateNote from "@/components/notes/create-note";
 import type { Note } from "@/lib/types";
 import Notes from "@/components/notes/notes";
@@ -8,8 +8,8 @@ import NotesLoading from "@/components/skeletons/notes-loading";
 import { Button } from "@/components/ui/button";
 import { Grid3x3Icon, Rows3Icon } from "lucide-react";
 import TooltipWrapper from "@/components/utility-components/TooltipWrapper";
-import useSWR from "swr";
-import fetcher from "@/lib/fetcher";
+// import useSWR from "swr";
+import axios from "axios";
 
 function ViewsOption() {
   return (
@@ -28,7 +28,13 @@ function ViewsOption() {
   );
 }
 
-function HomeLayout({ children }: { children: React.ReactNode }) {
+function HomeLayout({
+  children,
+  setNotes,
+}: {
+  children: React.ReactNode;
+  setNotes?: React.Dispatch<React.SetStateAction<Note[]>>;
+}) {
   const [openNewNoteDialog, setOpenNewNoteDialog] = useState(false);
 
   return (
@@ -42,7 +48,11 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
         </div>
         <ViewsOption />
         {children}
-        <CreateNote open={openNewNoteDialog} setOpen={setOpenNewNoteDialog} />
+        <CreateNote
+          setNotes={setNotes}
+          open={openNewNoteDialog}
+          setOpen={setOpenNewNoteDialog}
+        />
       </div>
     </PagesLayout>
   );
@@ -50,19 +60,56 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
 
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data, isLoading, error } = useSWR(
-    `${import.meta.env.VITE_API_URL}/${import.meta.env.VITE_API_VERSION}/notes`,
-    fetcher
-  );
+  // const { data, isLoading, error } = useSWR(
+  //   `${import.meta.env.VITE_API_URL}/${
+  //     import.meta.env.VITE_API_VERSION
+  //   }/notes?page=${page}`,
+  //   fetcher
+  // );
+
+  // const getKey = (pageIndex: number, prev: Note[]) => {
+  //   if (prev && !prev.length) return null;
+  //   return `${import.meta.env.VITE_API_URL}/${
+  //     import.meta.env.VITE_API_VERSION
+  //   }/notes?page=${pageIndex + 1}`;
+  // };
+
+  // const { data, error, isValidating, setSize } = useSWRinfinite(
+  //   getKey,
+  //   fetcher
+  // );
+
+  const fetchNotes = useCallback(async () => {
+    setIsLoading(true);
+
+    const result = await axios.get(
+      `${import.meta.env.VITE_API_URL}/${
+        import.meta.env.VITE_API_VERSION
+      }/notes?page=${page}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (result.data && result.data.length === notes.length) {
+      setIsLoading(false);
+      setHasMore(false);
+      return;
+    }
+
+    setNotes(result.data);
+    setIsLoading(false);
+  }, [page]);
 
   useEffect(() => {
-    if (data) {
-      setNotes(data.data);
-    }
-  }, [data]);
+    fetchNotes();
+  }, [fetchNotes]);
 
-  if (isLoading) {
+  if (notes.length === 0) {
     return (
       <HomeLayout>
         <NotesLoading />
@@ -70,18 +117,16 @@ export default function Home() {
     );
   }
 
-  if (error) {
-    return (
-      <HomeLayout>
-        <div>Something went wrong</div>
-      </HomeLayout>
-    );
-  }
-
   return (
     <>
-      <HomeLayout>
-        {notes.length > 0 && <Notes notes={notes} setNotes={setNotes} />}
+      <HomeLayout setNotes={setNotes}>
+        <Notes
+          hasMore={hasMore}
+          setPage={setPage}
+          notes={notes}
+          setNotes={setNotes}
+          isValidating={isLoading}
+        />
       </HomeLayout>
     </>
   );
