@@ -43,13 +43,15 @@ export default function NoteCard({
     transition,
     isDragging,
   } = useSortable({ id: note._id });
-  const { isMobile } = useIsMobile();
+  const isMobile = useIsMobile();
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: transform ? 999 : 0,
   };
+
+  console.log(isMobile);
 
   return (
     <>
@@ -70,9 +72,6 @@ export default function NoteCard({
             <div {...listeners} className="w-fit">
               <GripVertical className="w-4 h-4" />
             </div>
-            <div className="ml-auto">
-              <NoteMenu note={note} />
-            </div>
           </div>
         )}
         <div
@@ -89,15 +88,16 @@ export default function NoteCard({
           <div>
             <h1
               className={clsx(
-                view === "grid" && "text-lg font-medium",
-                view === "list" && "text-sm font-medium md:text-md"
+                view === "grid"
+                  ? "text-lg font-medium"
+                  : "text-xs md:text-md font-medium"
               )}
             >
               {view === "grid"
                 ? note.title
-                : note.title.length > 20
+                : note.title.length > 30
                 ? isMobile
-                  ? note.title.slice(0, 10) + "..."
+                  ? note.title.slice(0, 14) + "..."
                   : note.title.slice(0, 20) + "..."
                 : note.title}
             </h1>
@@ -107,11 +107,6 @@ export default function NoteCard({
             {note.notebookId && <NotebookName id={note.notebookId} />}
           </div>
           {children}
-          {view === "list" && (
-            <div className="ml-auto">
-              <NoteMenu note={note} />
-            </div>
-          )}
         </div>
         <div className="flex gap-1">
           <TooltipWrapper content="Edit note">

@@ -3,6 +3,7 @@ const { isAuthenticated } = require("../middlewares/auth.middleware");
 const {
   getPreferences,
   updateNotesLayout,
+  updateTheme,
 } = require("../controllers/preferences.controller");
 
 const router = Router();
