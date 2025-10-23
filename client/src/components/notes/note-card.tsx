@@ -15,17 +15,20 @@ import { GripVertical } from "lucide-react";
 import NotebookName from "../notebooks/notebook-name";
 import ExpandedNote from "./dialogs/expanded-note";
 import NoteMenu from "./note-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function NoteCard({
   note,
   setNoteState,
   children,
   setNotes,
+  view,
 }: {
   note: Note;
   setNoteState?: React.Dispatch<React.SetStateAction<Note>>;
   children: React.ReactNode;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
+  view?: "grid" | "list";
 }) {
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
@@ -40,6 +43,7 @@ export default function NoteCard({
     transition,
     isDragging,
   } = useSortable({ id: note._id });
+  const { isMobile } = useIsMobile();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -55,26 +59,59 @@ export default function NoteCard({
         {...attributes}
         className={clsx(
           isDragging ? "z-10 relative" : "z-0",
-          "flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300 bg-white dark:bg-neutral-900 h-[350px] md:[450px] lg:h-[400px]"
+          view === "grid" &&
+            "flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300 bg-white dark:bg-neutral-900 h-[350px] md:[450px] lg:h-[400px]",
+          view === "list" &&
+            "flex flex-col gap-2 p-2 rounded-lg shadow-md break-inside-avoid mb-4 outline light:outline-neutral-300 bg-white dark:bg-neutral-900"
         )}
       >
-        <div className="flex">
-          <div {...listeners} className="w-fit">
-            <GripVertical className="w-4 h-4" />
+        {view === "grid" && (
+          <div className="flex">
+            <div {...listeners} className="w-fit">
+              <GripVertical className="w-4 h-4" />
+            </div>
+            <div className="ml-auto">
+              <NoteMenu note={note} />
+            </div>
           </div>
-          <div className="ml-auto">
-            <NoteMenu note={note} />
-          </div>
-        </div>
-        <div className="flex flex-col gap-2 p-2 grow-1">
+        )}
+        <div
+          className={clsx(
+            view === "grid" && "flex flex-col gap-2 p-2 grow-1",
+            view === "list" && "flex flex-row gap-2 p-2"
+          )}
+        >
+          {view === "list" && (
+            <div {...listeners} className="w-fit">
+              <GripVertical className="w-4 h-4" />
+            </div>
+          )}
           <div>
-            <h1 className="text-lg font-medium">{note.title}</h1>
+            <h1
+              className={clsx(
+                view === "grid" && "text-lg font-medium",
+                view === "list" && "text-sm font-medium md:text-md"
+              )}
+            >
+              {view === "grid"
+                ? note.title
+                : note.title.length > 20
+                ? isMobile
+                  ? note.title.slice(0, 10) + "..."
+                  : note.title.slice(0, 20) + "..."
+                : note.title}
+            </h1>
             <p className="text-sm text-neutral-500">
               {timeLapsed(note.createdAt)}
             </p>
             {note.notebookId && <NotebookName id={note.notebookId} />}
           </div>
           {children}
+          {view === "list" && (
+            <div className="ml-auto">
+              <NoteMenu note={note} />
+            </div>
+          )}
         </div>
         <div className="flex gap-1">
           <TooltipWrapper content="Edit note">

@@ -5,28 +5,8 @@ import type { Note } from "@/lib/types";
 import Notes from "@/components/notes/notes";
 import NoteField from "@/components/notes/note-field";
 import NotesLoading from "@/components/skeletons/notes-loading";
-import { Button } from "@/components/ui/button";
-import { Grid3x3Icon, Rows3Icon } from "lucide-react";
-import TooltipWrapper from "@/components/utility-components/TooltipWrapper";
-// import useSWR from "swr";
 import axios from "axios";
-
-function ViewsOption() {
-  return (
-    <div className="px-6 flex gap-2">
-      <TooltipWrapper content="Grid view">
-        <Button size={"icon"} variant={"outline"}>
-          <Grid3x3Icon />
-        </Button>
-      </TooltipWrapper>
-      <TooltipWrapper content="List view">
-        <Button size={"icon"} variant={"outline"}>
-          <Rows3Icon />
-        </Button>
-      </TooltipWrapper>
-    </div>
-  );
-}
+import ViewsOption from "@/components/view-options";
 
 function HomeLayout({
   children,
@@ -46,7 +26,6 @@ function HomeLayout({
             title="Hello, Ericson"
           />
         </div>
-        <ViewsOption />
         {children}
         <CreateNote
           setNotes={setNotes}
@@ -63,25 +42,20 @@ export default function Home() {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [view, setView] = useState<"grid" | "list">("grid");
 
-  // const { data, isLoading, error } = useSWR(
-  //   `${import.meta.env.VITE_API_URL}/${
-  //     import.meta.env.VITE_API_VERSION
-  //   }/notes?page=${page}`,
-  //   fetcher
-  // );
+  const fetchPreferences = useCallback(async () => {
+    const preferences = await axios.get(
+      `${import.meta.env.VITE_API_URL}/${
+        import.meta.env.VITE_API_VERSION
+      }/preferences`,
+      { withCredentials: true }
+    );
 
-  // const getKey = (pageIndex: number, prev: Note[]) => {
-  //   if (prev && !prev.length) return null;
-  //   return `${import.meta.env.VITE_API_URL}/${
-  //     import.meta.env.VITE_API_VERSION
-  //   }/notes?page=${pageIndex + 1}`;
-  // };
-
-  // const { data, error, isValidating, setSize } = useSWRinfinite(
-  //   getKey,
-  //   fetcher
-  // );
+    if (preferences) {
+      setView(preferences.data.notesLayout.home);
+    }
+  }, []);
 
   const fetchNotes = useCallback(async () => {
     setIsLoading(true);
@@ -106,8 +80,9 @@ export default function Home() {
   }, [page]);
 
   useEffect(() => {
+    fetchPreferences();
     fetchNotes();
-  }, [fetchNotes]);
+  }, [fetchNotes, fetchPreferences]);
 
   if (notes.length === 0) {
     return (
@@ -120,12 +95,14 @@ export default function Home() {
   return (
     <>
       <HomeLayout setNotes={setNotes}>
+        <ViewsOption page="home" setView={setView} />
         <Notes
           hasMore={hasMore}
           setPage={setPage}
           notes={notes}
           setNotes={setNotes}
           isValidating={isLoading}
+          view={view}
         />
       </HomeLayout>
     </>

@@ -5,16 +5,23 @@ import { useState } from "react";
 export default function NoteText({
   note,
   setNotes,
+  view,
 }: {
   note: Note;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
+  view: "grid" | "list";
 }) {
   const [noteState, setNoteState] = useState<Note>(note);
 
   return (
-    <NoteCard note={noteState} setNoteState={setNoteState} setNotes={setNotes}>
+    <NoteCard
+      view={view}
+      note={noteState}
+      setNoteState={setNoteState}
+      setNotes={setNotes}
+    >
       <>
-        {noteState.content && (
+        {view === "grid" && noteState.content && (
           <p className="text-sm break-words whitespace-pre-wrap">
             {noteState.content.length >= 50
               ? noteState.content.substring(0, 100) + "..."

@@ -2,7 +2,7 @@ import PagesLayout from "../PagesLayout";
 import { useParams } from "react-router";
 import type { Note, Notebook } from "@/lib/types";
 import NoteField from "@/components/notes/note-field";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CreateNote from "@/components/notes/create-note";
 import Notes from "@/components/notes/notes";
 import useSWR from "swr";
@@ -11,6 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import NotesLoading from "@/components/skeletons/notes-loading";
 import NotFound from "../NotFound";
 import useSWRInfinite from "swr/infinite";
+import ViewsOption from "@/components/view-options";
+import axios from "axios";
 
 function NotebookLayout({
   children,
@@ -89,7 +91,21 @@ function NotebookNoteField({
 export default function Notebook() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [view, setView] = useState<"grid" | "list">("grid");
   const { id } = useParams();
+
+  const fetchPreferences = useCallback(async () => {
+    const preferences = await axios.get(
+      `${import.meta.env.VITE_API_URL}/${
+        import.meta.env.VITE_API_VERSION
+      }/preferences`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    setView(preferences.data.notesLayout.notebooks);
+  }, []);
 
   const getKey = (pageIndex: number, prev: Note[]) => {
     if (prev && !prev.length) return null;
@@ -97,13 +113,6 @@ export default function Notebook() {
       import.meta.env.VITE_API_VERSION
     }/notebooks/${id}/notes?page=${pageIndex + 1}`;
   };
-
-  // const { data, isLoading, error } = useSWR(
-  //   `${import.meta.env.VITE_API_URL}/${
-  //     import.meta.env.VITE_API_VERSION
-  //   }/notebooks/${id}/notes`,
-  //   fetcher
-  // );
 
   const { data, isValidating, error, setSize } = useSWRInfinite(
     getKey,
@@ -116,6 +125,10 @@ export default function Notebook() {
       setNotes(data.flat());
     }
   }, [data]);
+
+  useEffect(() => {
+    fetchPreferences();
+  }, [fetchPreferences]);
 
   if (!data) {
     return (
@@ -131,6 +144,9 @@ export default function Notebook() {
 
   return (
     <NotebookLayout setNotes={setNotes} notebookId={id!}>
+      <div className="mb-4">
+        <ViewsOption page="notebooks" setView={setView} />
+      </div>
       {notes.length > 0 && (
         <Notes
           hasMore={hasMore}
@@ -138,6 +154,7 @@ export default function Notebook() {
           isValidating={isValidating}
           notes={notes}
           setNotes={setNotes}
+          view={view}
         />
       )}
     </NotebookLayout>

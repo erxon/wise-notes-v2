@@ -17,6 +17,7 @@ const session = require("express-session");
 const helmet = require("helmet");
 const MongoStore = require("connect-mongo");
 const bin = require("./routes/bin.route");
+const preferences = require("./routes/preferences.route");
 
 const app = express();
 dotenv.config();
@@ -76,6 +77,7 @@ app.use(`${version}/notes`, notes);
 app.use(`${version}/bin`, bin);
 app.use(`${version}/rag`, rag);
 app.use(`${version}/test`, test);
+app.use(`${version}/preferences`, preferences);
 
 app.listen(port, () => {
   console.log("Server is running on port", port);

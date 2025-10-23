@@ -7,14 +7,18 @@ import { Spinner } from "../ui/spinner";
 function DisplayNote({
   note,
   setNotes,
+  view,
 }: {
   note: Note;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
+  view?: "grid" | "list";
 }) {
   return (
     <>
       <div>
-        {note.type === "text" && <NoteText setNotes={setNotes} note={note} />}
+        {note.type === "text" && (
+          <NoteText setNotes={setNotes} note={note} view={view} />
+        )}
       </div>
     </>
   );
@@ -26,12 +30,14 @@ export default function Notes({
   setPage,
   isValidating,
   hasMore,
+  view,
 }: {
   notes: Note[];
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
   setPage?: React.Dispatch<React.SetStateAction<number>>;
   isValidating: boolean;
   hasMore?: boolean;
+  view?: "grid" | "list";
 }) {
   const observer = useRef<IntersectionObserver>(null);
 
@@ -73,7 +79,12 @@ export default function Notes({
           {notes.map((note) => {
             if (!note.deletedAt) {
               return (
-                <DisplayNote key={note._id} note={note} setNotes={setNotes} />
+                <DisplayNote
+                  view={view}
+                  key={note._id}
+                  note={note}
+                  setNotes={setNotes}
+                />
               );
             }
           })}
