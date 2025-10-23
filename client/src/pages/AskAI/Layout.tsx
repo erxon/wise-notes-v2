@@ -1,6 +1,7 @@
 import { MessageCircleQuestion } from "lucide-react";
 import History from "./History/History";
 import { useParams } from "react-router";
+import HistorySheet from "./History/HistorySheet";
 
 /*
 
@@ -18,10 +19,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <MessageCircleQuestion className="w-6 h-6" />
           <p>Ask AI about your notes</p>
         </div>
-        <div>
+        <div className="lg:block">
           <History currentChat={id} />
         </div>
       </div>{" "}
+      <div className="block lg:hidden">
+        <HistorySheet />
+      </div>
       <div className="col-span-7">{children}</div>
     </div>
   );

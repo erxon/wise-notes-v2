@@ -154,7 +154,6 @@ const getNotes = async (req, res) => {
       return res.status(200).json(notes);
     }
   } catch (error) {
-    logger.error(error);
     res.status(400).json({ message: "Something went wrong" });
   }
 };

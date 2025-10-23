@@ -116,7 +116,7 @@ export default function QueryPanel() {
   const [query, setQuery] = useState<string>("");
 
   return (
-    <div className="px-12 flex flex-col h-[calc(100vh-100px)]">
+    <div className="px-4 md:px-12 flex flex-col h-[calc(100vh-100px)]">
       <header className="p-4 border-b font-semibold text-xl">Queries</header>
       <div className="flex-1 overflow-hidden">
         <DisplayLogs avatar={avatar} thinking={thinking} query={query} />
