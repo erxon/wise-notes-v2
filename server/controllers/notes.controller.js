@@ -251,6 +251,23 @@ const restoreNote = async (req, res) => {
   }
 };
 
+const restoreMany = async (req, res) => {
+  try {
+    const toRestore = req.body.toRestore;
+
+    await Note.updateMany(
+      { _id: { $in: toRestore }, userId: req.user.id },
+      { deletedAt: null, notebookId: null }
+    );
+
+    await Chunk.updateMany({ noteId: { $in: toRestore } }, { deletedAt: null, notebookId: null });
+
+    res.status(200).json({ message: "Notes restored successfully" });
+  } catch (error) {
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
 const updateNote = async (req, res) => {
   try {
     const note = await Note.findByIdAndUpdate(
@@ -326,4 +343,5 @@ module.exports = {
   reorderNotes,
   searchNotes,
   isAuthorized,
+  restoreMany,
 };

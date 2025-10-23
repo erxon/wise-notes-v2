@@ -9,6 +9,7 @@ const {
   deleteManyNotes,
   permanentDelete,
   restoreNote,
+  restoreMany,
   moveNotesToNotebook,
   removeFromNotebook,
   reorderNotes,
@@ -32,6 +33,7 @@ router
 
 router.route("/delete").delete(isAuthenticated, permanentDelete);
 
+router.route("/restore-all").put(isAuthenticated, restoreMany);
 router.route("/restore/:id").put(isAuthenticated, isAuthorized, restoreNote);
 
 router.put("/organize", isAuthenticated, moveNotesToNotebook);

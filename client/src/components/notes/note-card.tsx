@@ -51,8 +51,6 @@ export default function NoteCard({
     zIndex: transform ? 999 : 0,
   };
 
-  console.log(isMobile);
-
   return (
     <>
       <div

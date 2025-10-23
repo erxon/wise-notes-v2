@@ -5,8 +5,6 @@ import { useTheme } from "../theme-provider";
 export default function GoogleIcon() {
   const { theme } = useTheme();
 
-  console.log(theme);
-
   if (theme === "dark") {
     return (
       <svg

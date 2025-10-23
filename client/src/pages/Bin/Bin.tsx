@@ -14,6 +14,8 @@ import { useState } from "react";
 import PermanentDeleteNotebook from "./Dialogs/PermanentDeleteNotebook";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
+import BulkDeleteDialog from "./Dialogs/BulkDeleteDialog";
 
 export default function Bin() {
   return (
@@ -42,6 +44,11 @@ function DeletedNotes() {
     fetcher
   );
 
+  const [marked, setMarked] = useState<Note[]>([]);
+  const [deleting, setIsDeleting] = useState<boolean>(false);
+  const [restoring, setIsRestoring] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -50,19 +57,124 @@ function DeletedNotes() {
     return <div>Something went wrong</div>;
   }
 
+  const handleDeleteAll = async () => {
+    setIsDeleting(true);
+    try {
+      const result = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/${
+          import.meta.env.VITE_API_VERSION
+        }/notes/delete`,
+        {
+          withCredentials: true,
+          data: {
+            toDelete: marked.map((note) => note._id),
+          },
+        }
+      );
+
+      if (result.status === 200)
+        mutate(
+          `${import.meta.env.VITE_API_URL}/${
+            import.meta.env.VITE_API_VERSION
+          }/bin/`
+        );
+
+      toast.success(result.data.message);
+      
+      setMarked([]);
+    } catch {
+      toast.error("Something went wrong");
+    }
+    setIsDeleting(false);
+  };
+
+  const handleRestoreAll = async () => {
+    setIsRestoring(true);
+    try {
+      const result = await axios.put(
+        `${import.meta.env.VITE_API_URL}/${
+          import.meta.env.VITE_API_VERSION
+        }/notes/restore-all`,
+        {
+            toRestore: marked.map((note) => note._id),
+        },
+        {withCredentials: true}
+      );
+
+      if (result.status === 200)
+        mutate(
+          `${import.meta.env.VITE_API_URL}/${
+            import.meta.env.VITE_API_VERSION
+          }/bin/`
+        );
+
+      toast.success(result.data.message);
+      setMarked([]);
+    } catch {
+      toast.error("Something went wrong");
+    }
+    setIsRestoring(false)
+  };
+
   if (notes) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-        {notes && notes.data && notes.data.length > 0 ? (
-          notes.data.map((note: Note) => (
-            <DeletedNote key={note._id} note={note} />
-          ))
-        ) : (
-          <div className="text-neutral-500">
-            You don't have notes in the bin
-          </div>
-        )}
-      </div>
+      <>
+        <div className="h-12 my-4 flex gap-4 items-center">
+          <p className="text-neutral-500">
+            You have {notes.data ? notes.data.length : 0} notes in the bin
+          </p>
+          {marked && marked.length > 0 && (
+            <div className="flex gap-2">
+              <Button
+                disabled={deleting || restoring}
+                onClick={() => setOpenDeleteDialog(true)}
+                variant="destructive"
+                size={"sm"}
+              >
+                <Trash2Icon className="mr-2 h-4 w-4" />
+                Delete all {`(${marked.length})`}
+              </Button>
+              <Button
+                disabled={restoring || deleting}
+                onClick={handleRestoreAll}
+                variant={"outline"}
+                size={"sm"}
+              >
+                <Undo2Icon className="mr-2 h-4 w-4" />
+                Restore all {`(${marked.length})`}
+              </Button>
+            </div>
+          )}
+          {deleting || restoring && (
+              <div className="text-neutral-500 flex items-center gap-2">
+                <Spinner />
+                <p>
+                  {deleting && "Deleting..."}
+                  {restoring && "Restoring..."}
+                </p>
+              </div>
+            )}
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          {notes &&
+            notes.data &&
+            notes.data.map((note: Note) => (
+              <DeletedNote
+                setMarked={setMarked}
+                marked={marked}
+                key={note._id}
+                note={note}
+                deleting={deleting}
+                restoring={restoring}
+              />
+            ))}
+        </div>
+        <BulkDeleteDialog
+          isOpen={openDeleteDialog}
+          setOpen={setOpenDeleteDialog}
+          onDeleteAll={handleDeleteAll}
+        />
+      </>
     );
   }
 }

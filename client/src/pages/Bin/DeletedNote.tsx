@@ -8,21 +8,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Note } from "@/lib/types";
-import { Undo2, Trash2 } from "lucide-react";
+import { Undo2, Trash2, CircleCheck } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import PermanentDelete from "./Dialogs/PermanentDelete";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import { ExpandIcon } from "lucide-react";
 import ExpandedNote from "./Dialogs/ExpandedNote";
+import clsx from "clsx";
 
-export default function DeletedNote({ note }: { note: Note }) {
+export default function DeletedNote({
+  note,
+  marked,
+  setMarked,
+  deleting,
+  restoring,
+}: {
+  note: Note;
+  marked: Note[];
+  setMarked: React.Dispatch<SetStateAction<Note[]>>;
+  deleting: boolean;
+  restoring: boolean;
+}) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isOpenPermanentDeleteDialog, setIsOpenPermanentDeleteDialog] =
     useState<boolean>(false);
@@ -71,6 +84,14 @@ export default function DeletedNote({ note }: { note: Note }) {
     setExpandNote(true);
   };
 
+  const handleMark = () => {
+    if (marked.includes(note)) {
+      setMarked((prev) => prev.filter((n) => n._id !== note._id));
+    } else {
+      setMarked((prev) => [...prev, note]);
+    }
+  };
+
   return (
     <>
       <Card className="h-[350px]">
@@ -89,7 +110,7 @@ export default function DeletedNote({ note }: { note: Note }) {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                disabled={isLoading}
+                disabled={isLoading || deleting || restoring}
                 onClick={handleRestore}
                 variant={"ghost"}
                 size={"sm"}
@@ -104,7 +125,7 @@ export default function DeletedNote({ note }: { note: Note }) {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                disabled={isLoading}
+                disabled={isLoading || deleting || restoring}
                 onClick={handlePermanentDelete}
                 variant={"ghost"}
                 size={"sm"}
@@ -118,12 +139,37 @@ export default function DeletedNote({ note }: { note: Note }) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={handleExpandNote} variant={"ghost"} size={"sm"}>
+              <Button
+                disabled={deleting || restoring}
+                onClick={handleExpandNote}
+                variant={"ghost"}
+                size={"sm"}
+              >
                 <ExpandIcon />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Expand</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={handleMark}
+                disabled={isLoading || deleting || restoring}
+                variant={"ghost"}
+                size={"sm"}
+                className={clsx(
+                  marked &&
+                    marked.includes(note) &&
+                    "bg-green-500 text-accent-foreground hover:bg-green-400"
+                )}
+              >
+                <CircleCheck />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {marked.includes(note) ? <p>Unmark</p> : <p>Mark</p>}
             </TooltipContent>
           </Tooltip>
         </CardFooter>
