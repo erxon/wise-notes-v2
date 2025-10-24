@@ -14,7 +14,6 @@ import clsx from "clsx";
 import { GripVertical } from "lucide-react";
 import NotebookName from "../notebooks/notebook-name";
 import ExpandedNote from "./dialogs/expanded-note";
-import NoteMenu from "./note-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function NoteCard({
