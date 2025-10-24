@@ -18,7 +18,7 @@ export default function Logs({ chat }: { chat: Chat }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSavedAsNote, setIsSavedAsNote] = useState(chat.savedAsNote);
 
-  const [think, answer] = chat.answer.split("</think>");
+  const [, answer] = chat.answer.split("</think>");
 
   const saveAsNote = async () => {
     toast.info("Saving as note");
