@@ -24,7 +24,7 @@ export default function Log({ chat, avatar }: { chat: Chat; avatar: string }) {
   useEffect(() => {
     if (chat.answer) {
       if (chat.answer.includes("</think>")) {
-        const [think, answer] = chat.answer.split("</think>");
+        const [, answer] = chat.answer.split("</think>");
         setAnswer(answer);
       } else {
         setAnswer(chat.answer);
