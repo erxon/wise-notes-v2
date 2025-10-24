@@ -86,17 +86,11 @@ export default function NoteCard({
             <h1
               className={clsx(
                 view === "grid"
-                  ? "text-lg font-medium"
+                  ? "text-sm font-medium md:text-lg"
                   : "text-xs md:text-md font-medium"
               )}
-            >
-              {view === "grid"
-                ? note.title
-                : note.title.length > 30
-                ? isMobile
-                  ? note.title.slice(0, 14) + "..."
-                  : note.title.slice(0, 20) + "..."
-                : note.title}
+            > 
+              {isMobile && note.title.length > 20 ? note.title.substring(0, 25) + "..." : note.title}
             </h1>
             <p className="text-sm text-neutral-500">
               {timeLapsed(note.createdAt)}
