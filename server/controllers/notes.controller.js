@@ -134,7 +134,7 @@ const getNotes = async (req, res) => {
     const { page } = req.query;
 
     const parsedPage = Number(page);
-    const limit = parsedPage * 8;
+    const limit = parsedPage * 6;
 
     const totalNotes = await Note.find({
       userId: req.user.id,

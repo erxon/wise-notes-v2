@@ -74,7 +74,7 @@ export default function Notes({
 
   return (
     <>
-      <div className="md:mx-6 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="md:mx-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <SortableLayoutWrapper notes={notes} setNotes={setNotes}>
           {notes.map((note) => {
             if (!note.deletedAt) {
