@@ -20,6 +20,9 @@ const bin = require("./routes/bin.route");
 const preferences = require("./routes/preferences.route");
 
 const app = express();
+
+app.set("trust proxy", 1);
+
 dotenv.config();
 const version = "/api/v1";
 const port = process.env.PORT || 8080;
@@ -55,8 +58,9 @@ app.use(
       ttl: 1000 * 60 * 60,
     }),
     cookie: {
-      sameSite: "lax",
+      sameSite: "none",
       httpOnly: false,
+      secure: true,
       maxAge: 1000 * 60 * 60,
     },
   })
