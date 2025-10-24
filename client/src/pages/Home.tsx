@@ -1,4 +1,3 @@
-import PagesLayout from "./PagesLayout";
 import { useCallback, useEffect, useState } from "react";
 import CreateNote from "@/components/notes/create-note";
 import type { Note } from "@/lib/types";
@@ -7,6 +6,7 @@ import NoteField from "@/components/notes/note-field";
 import NotesLoading from "@/components/skeletons/notes-loading";
 import axios from "axios";
 import ViewsOption from "@/components/view-options";
+import PagesLayout from "./PagesLayout";
 
 function HomeLayout({
   children,
