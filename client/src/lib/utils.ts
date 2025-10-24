@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function timeLapsed(isoString: string) {
   const date = new Date(isoString);
   const now = new Date();
-  const diffInSeconds = Math.floor((now - date) / 1000);
+  const diffInSeconds = Math.floor((now.getTime()  - date.getTime()) / 1000);
 
   const intervals = [
     { label: "year", seconds: 31536000 },
