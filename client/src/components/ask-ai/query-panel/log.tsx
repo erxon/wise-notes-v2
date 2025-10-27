@@ -124,7 +124,7 @@ export default function Log({ chat, avatar }: { chat: Chat; avatar: string }) {
         </Avatar>
         <div>
           <p className="text-sm text-neutral-500 pl-2 mb-1">
-            You, {timeLapsed(chat.createdAt)}
+            {timeLapsed(chat.createdAt)}
           </p>
           <p className="px-4 py-2 w-fit bg-zinc-700 text-white rounded-lg">
             {chat.query}

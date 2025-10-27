@@ -54,14 +54,23 @@ const createUser = async (req, res) => {
   }
 };
 
-const getUser = (req, res) => {
-  res.status(200).json({
-    id: req.user.id,
-    email: req.user.email,
-    firstName: req.user.firstName,
-    lastName: req.user.lastName,
-    profilePicture: req.user.profilePicture,
-  });
+const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    
+    res.status(200).json({
+      id: req.user.id,
+      email: req.user.email,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      profilePicture: req.user.profilePicture,
+      type: user.type ? user.type : null,
+      usageLimit: user.usageLimit ? user.usageLimit : null,
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).json({ message: "Something went wrong" });
+  }
 };
 
 const updateUserBasicInfo = async (req, res) => {

@@ -84,7 +84,7 @@ export default function Home() {
     fetchNotes();
   }, [fetchNotes, fetchPreferences]);
 
-  if (notes.length === 0) {
+  if (isLoading && notes.length === 0) {
     return (
       <HomeLayout>
         <NotesLoading />
@@ -92,19 +92,25 @@ export default function Home() {
     );
   }
 
-  return (
-    <>
-      <HomeLayout setNotes={setNotes}>
-        <ViewsOption page="home" setView={setView} />
-        <Notes
-          hasMore={hasMore}
-          setPage={setPage}
-          notes={notes}
-          setNotes={setNotes}
-          isValidating={isLoading}
-          view={view}
-        />
-      </HomeLayout>
-    </>
-  );
+    return (
+      <>
+        <HomeLayout setNotes={setNotes}>
+          {notes.length > 0 && <ViewsOption page="home" setView={setView} />}
+          {notes.length > 0 ? (
+            <Notes
+              hasMore={hasMore}
+              setPage={setPage}
+              notes={notes}
+              setNotes={setNotes}
+              isValidating={isLoading}
+              view={view}
+            />
+          ) : (
+            <p className="text-neutral-500 mx-auto text-sm">
+              You have no notes yet
+            </p>
+          )}
+        </HomeLayout>
+      </>
+    );
 }

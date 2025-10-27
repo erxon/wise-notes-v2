@@ -3,6 +3,7 @@ const logger = require("../utilities/logger.util");
 const chunkGenerator = require("../utilities/chunkGenerator.util");
 const Chunk = require("../models/chunks.model");
 const Notebook = require("../models/notebooks.model");
+const User = require("../models/user.model");
 const _ = require("lodash");
 
 const isAuthorized = async (req, res, next) => {
@@ -101,6 +102,8 @@ const createNote = async (req, res) => {
   try {
     const { title, content, type, items, notebookId } = req.body;
 
+    const user = await User.findById(req.user.id);
+
     const [previousNote] = await Note.find({
       userId: req.user.id,
       deletedAt: null,
@@ -119,6 +122,9 @@ const createNote = async (req, res) => {
       sortKey: previousNote ? previousNote.sortKey - 1 : 0,
     });
 
+    user.usageLimit.notes = user.usageLimit.notes + 1;
+    await user.save();
+    
     const note = await newNote.save();
 
     await chunkGenerator(content, note._id, req.user.id, notebookId);

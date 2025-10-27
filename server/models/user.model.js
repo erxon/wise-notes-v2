@@ -29,6 +29,23 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false, // Google users can be auto-verified
   },
+  type: {
+    type: String,
+    enum: ["owner", "user"],
+    default: "user",
+  },
+  usageLimit: {
+    notes: {
+      type: Number,
+      default: 0,
+      max: [24, "Usage limit reached"],
+    },
+    chat: {
+      type: Number,
+      default: 0,
+      max: [10, "Usage limit reached"],
+    }
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

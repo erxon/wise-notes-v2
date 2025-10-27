@@ -6,10 +6,12 @@ const { RunnablePassthrough } = require("@langchain/core/runnables");
 const logger = require("../utilities/logger.util");
 const { ObjectId } = require("mongodb");
 const Chat = require("../models/chats.model");
+const User = require("../models/user.model");
 
 const query = async (req, res) => {
   const { query } = req.body;
 
+  const user = await User.findById(req.user.id);
   const userId = ObjectId.createFromHexString(req.user.id);
 
   try {
@@ -42,11 +44,15 @@ const query = async (req, res) => {
       .pipe(new StringOutputParser());
 
     const response = await chain.invoke({ question: query });
+    
+    user.usageLimit.chat = user.usageLimit.chat + 1;
+    await user.save();
 
     const newChat = new Chat({
       userId: userId,
       query: query,
       answer: response,
+      createdAt: Date.now(),
     });
 
     const savedChat = await newChat.save();

@@ -72,6 +72,11 @@ export default function EditNotebook({
             import.meta.env.VITE_API_VERSION
           }/notebooks`
         );
+        mutate(
+          `${import.meta.env.VITE_API_URL}/${
+            import.meta.env.VITE_API_VERSION
+          }/notebooks/${notebook._id}`
+        );
         toast.success(response.data.message);
       }
     } catch (error) {
