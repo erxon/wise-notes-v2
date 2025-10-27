@@ -1,7 +1,7 @@
 import type { Note } from "@/lib/types";
 import NoteText from "./note-text";
 import SortableLayoutWrapper from "../utility-components/SortableLayoutWrapper";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { Spinner } from "../ui/spinner";
 
 function DisplayNote({
@@ -11,7 +11,7 @@ function DisplayNote({
 }: {
   note: Note;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
-  view?: "grid" | "list";
+  view: "grid" | "list";
 }) {
   return (
     <>
@@ -34,10 +34,10 @@ export default function Notes({
 }: {
   notes: Note[];
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
-  setPage?: React.Dispatch<React.SetStateAction<number>>;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   isValidating: boolean;
   hasMore?: boolean;
-  view?: "grid" | "list";
+  view: "grid" | "list";
 }) {
   const observer = useRef<IntersectionObserver>(null);
 
@@ -74,7 +74,7 @@ export default function Notes({
 
   return (
     <>
-      <div className="md:mx-6 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="md:mx-6 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <SortableLayoutWrapper notes={notes} setNotes={setNotes}>
           {notes.map((note) => {
             if (!note.deletedAt) {

@@ -11,6 +11,7 @@ import {
 import { Notebook } from "@/lib/types";
 import axios, { AxiosError } from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { mutate } from "swr";
 
@@ -24,6 +25,8 @@ export default function DeleteAlert({
   notebook: Notebook;
 }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
   const handleDelete = async () => {
     setIsLoading(true);
 
@@ -42,6 +45,8 @@ export default function DeleteAlert({
             import.meta.env.VITE_API_VERSION
           }/notebooks`
         );
+        navigate("/")
+
         toast.success("Notebook moved to bin");
       }
     } catch (error) {

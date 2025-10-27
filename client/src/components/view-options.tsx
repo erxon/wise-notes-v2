@@ -32,7 +32,7 @@ export default function ViewsOption({
     }
   };
   return (
-    <div className="px-6 flex gap-2">
+    <div className="md:px-6 flex gap-2">
       <TooltipWrapper content="Grid view">
         <Button
           onClick={() => handleViewChange("grid")}

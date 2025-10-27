@@ -12,21 +12,23 @@ import axios, { AxiosError } from "axios";
 import { NotebookIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 
 export default function MoveNote({
   open,
   setOpen,
   noteToMove,
+  setNotes,
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   noteToMove: Note;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Type a command or search..." />
-      <Suggestions setOpen={setOpen} noteToMove={noteToMove} />
+      <Suggestions setNotes={setNotes} setOpen={setOpen} noteToMove={noteToMove} />
     </CommandDialog>
   );
 }
@@ -34,9 +36,11 @@ export default function MoveNote({
 function Suggestions({
   setOpen,
   noteToMove,
+  setNotes,
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   noteToMove: Note;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   const {
     data: notebooks,
@@ -69,6 +73,7 @@ function Suggestions({
                 notebook={notebook}
                 setOpen={setOpen}
                 noteToMove={noteToMove}
+                setNotes={setNotes}
               />
             ))}
         </CommandGroup>
@@ -81,10 +86,12 @@ function NotebookItem({
   notebook,
   setOpen,
   noteToMove,
+  setNotes,
 }: {
   notebook: Notebook;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   noteToMove: Note;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -108,16 +115,10 @@ function NotebookItem({
       );
 
       if (response.status === 200) {
-        mutate(
-          `${import.meta.env.VITE_API_URL}/${
-            import.meta.env.VITE_API_VERSION
-          }/notebooks/${notebook._id}/notes`
-        );
-        mutate(
-          `${import.meta.env.VITE_API_URL}/${
-            import.meta.env.VITE_API_VERSION
-          }/notes`
-        );
+        setNotes((prev) => {
+          return prev.filter((note) => {
+            return note._id !== noteToMove._id;
+        })});
         toast.success(response.data.message);
       }
     } catch (error) {

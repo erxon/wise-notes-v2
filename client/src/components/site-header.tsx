@@ -10,6 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import User from "@/lib/types/user.type";
 
 interface BackLink {
   link: string;
@@ -19,9 +20,11 @@ interface BackLink {
 export function SiteHeader({
   currentPage,
   backLinks,
+  user,
 }: {
   currentPage?: string;
   backLinks?: BackLink[];
+  user: User;
 }) {
   return (
     <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
@@ -54,6 +57,28 @@ export function SiteHeader({
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        <div className="ml-auto">
+          {user.type === "user" &&
+            user.usageLimit &&
+            (user.usageLimit.notes === Number(import.meta.env.VITE_NOTE_LIMIT) &&
+            user.usageLimit.chat === Number(import.meta.env.VITE_CHAT_LIMIT) ? (
+              <p className="text-xs md:text-sm text-red-300">You have already reached your usage limit</p>
+            ) : (
+              <div className="text-xs md:text-sm">
+                <p className="font-semibold text-neutral-500">Usage Limit </p>
+                <p className="text-neutral-400 ">
+                  <span className="mr-4">
+                    Notes: {user.usageLimit.notes} /{" "}
+                    {import.meta.env.VITE_NOTE_LIMIT}
+                  </span>
+                  <span>
+                    Chat: {user.usageLimit.chat} /{" "}
+                    {import.meta.env.VITE_CHAT_LIMIT}
+                  </span>
+                </p>
+              </div>
+            ))}
+        </div>
       </div>
     </header>
   );

@@ -9,10 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Note } from "@/lib/types";
 import axios from "axios";
 import { ExpandIcon, SearchIcon } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 
 export default function SearchDialog({
   isOpen,
@@ -89,10 +89,10 @@ function SearchResults({ searchResults }: { searchResults: Note[] }) {
       {searchResults && searchResults.length > 0 ? (
         <div className="flex flex-col gap-2">
           {searchResults.map((note) => (
-            <div key={note.id} className="flex flex-col gap-2">
+            <div key={note._id} className="flex flex-col gap-2">
               <p className="font-bold">{note.title}</p>
               <p className="text-sm">
-                {note.content.length > 100
+                {note && note.content && note.content.length > 100
                   ? `${note.content.substring(0, 100)}...`
                   : note.content}
               </p>

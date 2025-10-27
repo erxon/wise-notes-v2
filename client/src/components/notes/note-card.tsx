@@ -14,7 +14,6 @@ import clsx from "clsx";
 import { GripVertical } from "lucide-react";
 import NotebookName from "../notebooks/notebook-name";
 import ExpandedNote from "./dialogs/expanded-note";
-import NoteMenu from "./note-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function NoteCard({
@@ -85,19 +84,10 @@ export default function NoteCard({
           )}
           <div>
             <h1
-              className={clsx(
-                view === "grid"
-                  ? "text-lg font-medium"
-                  : "text-xs md:text-md font-medium"
-              )}
-            >
-              {view === "grid"
-                ? note.title
-                : note.title.length > 30
-                ? isMobile
-                  ? note.title.slice(0, 14) + "..."
-                  : note.title.slice(0, 20) + "..."
-                : note.title}
+              className="text-sm md:text-md font-medium"
+            > 
+              {view === "grid" ? (isMobile && note.title.length > 20 ? note.title.substring(0, 25) + "..." : note.title) : 
+              (isMobile ? note.title.substring(0, 20) + "..." : note.title.slice(0, 30) + "...")}
             </h1>
             <p className="text-sm text-neutral-500">
               {timeLapsed(note.createdAt)}
@@ -171,6 +161,7 @@ export default function NoteCard({
         open={openMoveNoteDialog}
         setOpen={setOpenMoveNoteDialog}
         noteToMove={noteToMove!}
+        setNotes={setNotes}
       />
       <ExpandedNote
         note={note}

@@ -1,5 +1,5 @@
 import PagesLayout from "../PagesLayout";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import type { Note, Notebook } from "@/lib/types";
 import NoteField from "@/components/notes/note-field";
 import { useCallback, useEffect, useState } from "react";
@@ -56,6 +56,7 @@ function NotebookNoteField({
   id: string;
   setOpenNewNoteDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const navigate = useNavigate();
   const {
     data: notebook,
     isLoading,
@@ -78,6 +79,12 @@ function NotebookNoteField({
 
   if (error) {
     return <NotFound />;
+  }
+
+  if (notebook) {
+    if (notebook.deletedAt) {
+      navigate("/")
+    }
   }
 
   return (

@@ -35,21 +35,22 @@ export default function PagesLayout({
   if (error) {
     if (error instanceof AxiosError) {
       if (error.status === 401) {
-        navigate("/sign-in")
+        navigate("/sign-in");
       }
     }
     return <div>Something went wrong</div>;
   }
 
-  if (!data) navigate("/sign-in")
+  if (!data) navigate("/sign-in");
 
   return (
     <>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset className="h-screen">
-          <SiteHeader backLinks={backLinks} currentPage={page} />
+          <SiteHeader backLinks={backLinks} currentPage={page} user={data} />
           <main className="p-4">
+            
             {children}
             <Toaster richColors />
           </main>
