@@ -161,6 +161,7 @@ export default function NoteCard({
         open={openMoveNoteDialog}
         setOpen={setOpenMoveNoteDialog}
         noteToMove={noteToMove!}
+        setNotes={setNotes}
       />
       <ExpandedNote
         note={note}

@@ -116,7 +116,7 @@ const createNote = async (req, res) => {
       type,
       items,
       notebookId: notebookId ? notebookId : null,
-      sortKey: previousNote.sortKey - 1,
+      sortKey: previousNote ? previousNote.sortKey - 1 : 0,
     });
 
     const note = await newNote.save();
@@ -125,6 +125,7 @@ const createNote = async (req, res) => {
 
     res.status(200).json({ data: note, message: "Note created successfully" });
   } catch (error) {
+    logger.error(error)
     res.status(400).json({ message: "Something went wrong" });
   }
 };
