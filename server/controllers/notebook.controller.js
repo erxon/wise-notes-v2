@@ -189,8 +189,8 @@ const getNotesInNotebook = async (req, res) => {
   const parsedPage = Number(page);
 
   try {
-    const limit = parsedPage * 6;
-    const skip = limit - 6;
+    const limit = parsedPage * 8;
+    const skip = limit - 8;
 
     const allNotes = await Note.find({
       userId: req.user.id,
