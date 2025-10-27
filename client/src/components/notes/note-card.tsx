@@ -84,11 +84,7 @@ export default function NoteCard({
           )}
           <div>
             <h1
-              className={clsx(
-                view === "grid"
-                  ? "text-sm font-medium md:text-lg"
-                  : "text-sm md:text-md font-medium"
-              )}
+              className="text-sm md:text-md font-medium"
             > 
               {view === "grid" ? (isMobile && note.title.length > 20 ? note.title.substring(0, 25) + "..." : note.title) : 
               (isMobile ? note.title.substring(0, 20) + "..." : note.title.slice(0, 30) + "...")}
