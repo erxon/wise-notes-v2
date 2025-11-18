@@ -34,14 +34,10 @@ export default function PagesLayout({
 
   if (error) {
     if (error instanceof AxiosError) {
-      if (error.status === 401) {
         navigate("/sign-in");
-      }
     }
     return <div>Something went wrong</div>;
   }
-
-  if (!data) navigate("/sign-in");
 
   return (
     <>
